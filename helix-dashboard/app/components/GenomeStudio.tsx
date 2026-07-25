@@ -1,21 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { StrategicBaseline, DepartmentDrift } from '../data/mockData';
-import { GenomeSpace3D } from './GenomeSpace3D';
+import { StrategicBaseline } from '../data/mockData';
 
 interface GenomeStudioProps {
   baselines: StrategicBaseline[];
   onAddBaseline: (newBaseline: Omit<StrategicBaseline, 'id' | 'createdDate'>) => void;
-  departments?: DepartmentDrift[];
 }
 
 export const GenomeStudio: React.FC<GenomeStudioProps> = ({
   baselines,
   onAddBaseline,
-  departments,
 }) => {
-  const [activeTab, setActiveTab] = useState<'baselines' | 'space3d'>('baselines');
   const [expandedId, setExpandedId] = useState<string | null>(baselines[0]?.id || null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -63,225 +59,183 @@ export const GenomeStudio: React.FC<GenomeStudioProps> = ({
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {/* View Tab Switcher */}
-          <div style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(11, 15, 23, 0.8)', padding: '4px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <button
-              onClick={() => setActiveTab('baselines')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: activeTab === 'baselines' ? '#6366F1' : 'transparent',
-                color: activeTab === 'baselines' ? '#FFFFFF' : '#9CA3AF',
-                fontSize: '11px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              OKR Baselines
-            </button>
-            <button
-              onClick={() => setActiveTab('space3d')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: activeTab === 'space3d' ? '#6366F1' : 'transparent',
-                color: activeTab === 'space3d' ? '#FFFFFF' : '#9CA3AF',
-                fontSize: '11px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              3D Genome Space
-            </button>
-          </div>
-
-          <button
-            onClick={() => setIsModalOpen(true)}
-            style={{
-              padding: '10px 16px',
-              borderRadius: '8px',
-              backgroundColor: '#6366F1',
-              color: '#FFFFFF',
-              border: 'none',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Add Strategic Objective
-          </button>
-        </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          style={{
+            padding: '10px 16px',
+            borderRadius: '8px',
+            backgroundColor: '#6366F1',
+            color: '#FFFFFF',
+            border: 'none',
+            fontSize: '12px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Add Strategic Objective
+        </button>
       </div>
 
-      {activeTab === 'space3d' ? (
-        <GenomeSpace3D departments={departments || []} />
-      ) : (
-        /* Strategic Baselines Accordion List */
-        <div className="glass-panel" style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {baselines.map((base) => {
-              const isExpanded = expandedId === base.id;
+      {/* Strategic Baselines Accordion List */}
+      <div className="glass-panel" style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {baselines.map((base) => {
+            const isExpanded = expandedId === base.id;
 
-              return (
+            return (
+              <div
+                key={base.id}
+                style={{
+                  borderRadius: '10px',
+                  backgroundColor: isExpanded ? 'rgba(22, 27, 38, 0.9)' : 'rgba(22, 27, 38, 0.5)',
+                  border: isExpanded ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {/* Accordion Header Bar */}
                 <div
-                  key={base.id}
+                  onClick={() => setExpandedId(isExpanded ? null : base.id)}
                   style={{
-                    borderRadius: '10px',
-                    backgroundColor: isExpanded ? 'rgba(22, 27, 38, 0.9)' : 'rgba(22, 27, 38, 0.5)',
-                    border: isExpanded ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
-                    overflow: 'hidden',
-                    transition: 'all 0.2s ease',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    userSelect: 'none',
                   }}
                 >
-                  {/* Accordion Header Bar */}
-                  <div
-                    onClick={() => setExpandedId(isExpanded ? null : base.id)}
-                    style={{
-                      padding: '16px 20px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        padding: '3px 8px',
-                        borderRadius: '6px',
-                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                        color: '#818CF8',
-                        border: '1px solid rgba(99, 102, 241, 0.3)',
-                      }}>
-                        {base.code}
-                      </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                      color: '#818CF8',
+                      border: '1px solid rgba(99, 102, 241, 0.3)',
+                    }}>
+                      {base.code}
+                    </span>
 
-                      <div>
-                        <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#FFFFFF' }}>
-                          {base.title}
-                        </h4>
-                        <span style={{ fontSize: '11px', color: '#9CA3AF' }}>{base.category}</span>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '10px', color: '#6B7280', display: 'block' }}>Tolerance Cap</span>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#34D399' }}>
-                          ±{(base.toleranceThreshold * 100).toFixed(0)}%
-                        </span>
-                      </div>
-
-                      <span style={{
-                        fontSize: '10px',
-                        fontWeight: 700,
-                        padding: '3px 8px',
-                        borderRadius: '12px',
-                        backgroundColor: base.status === 'Active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                        color: base.status === 'Active' ? '#10B981' : '#F59E0B',
-                      }}>
-                        {base.status}
-                      </span>
-
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#9CA3AF"
-                        strokeWidth="2"
-                        style={{
-                          transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.2s ease',
-                        }}
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#FFFFFF' }}>
+                        {base.title}
+                      </h4>
+                      <span style={{ fontSize: '11px', color: '#9CA3AF' }}>{base.category}</span>
                     </div>
                   </div>
 
-                  {/* Accordion Body Content */}
-                  {isExpanded && (
-                    <div style={{
-                      padding: '0 20px 20px 20px',
-                      borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                      marginTop: '8px',
-                      paddingTop: '16px',
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '10px', color: '#6B7280', display: 'block' }}>Tolerance Cap</span>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#34D399' }}>
+                        ±{(base.toleranceThreshold * 100).toFixed(0)}%
+                      </span>
+                    </div>
+
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: '12px',
+                      backgroundColor: base.status === 'Active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                      color: base.status === 'Active' ? '#10B981' : '#F59E0B',
                     }}>
-                      <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#D1D5DB', lineHeight: '1.5' }}>
-                        {base.description}
-                      </p>
+                      {base.status}
+                    </span>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
-                        <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0E131F', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                          <span style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Active Telemetry Monitors</span>
-                          <div style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
-                            {base.activeMonitorsCount} Channels
-                          </div>
-                        </div>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#9CA3AF"
+                      strokeWidth="2"
+                      style={{
+                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </div>
 
-                        <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0E131F', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                          <span style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Aligned Transmissions</span>
-                          <div style={{ fontSize: '18px', fontWeight: 700, color: '#10B981', marginTop: '2px' }}>
-                            {base.alignedCount} Signals
-                          </div>
-                        </div>
+                {/* Accordion Body Content */}
+                {isExpanded && (
+                  <div style={{
+                    padding: '0 20px 20px 20px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                    marginTop: '8px',
+                    paddingTop: '16px',
+                  }}>
+                    <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#D1D5DB', lineHeight: '1.5' }}>
+                      {base.description}
+                    </p>
 
-                        <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0E131F', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                          <span style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Flagged Drift Signals</span>
-                          <div style={{ fontSize: '18px', fontWeight: 700, color: '#EF4444', marginTop: '2px' }}>
-                            {base.driftedCount} Signals
-                          </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
+                      <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0E131F', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <span style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Active Telemetry Monitors</span>
+                        <div style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
+                          {base.activeMonitorsCount} Channels
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                        <button style={{
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          color: '#D1D5DB',
-                          fontSize: '11px',
-                          cursor: 'pointer',
-                        }}>
-                          Calibrate Variance Threshold
-                        </button>
-                        <button style={{
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                          border: '1px solid rgba(99, 102, 241, 0.3)',
-                          color: '#A5B4FC',
-                          fontSize: '11px',
-                          cursor: 'pointer',
-                        }}>
-                          View Matched Signals
-                        </button>
+                      <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0E131F', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <span style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Aligned Transmissions</span>
+                        <div style={{ fontSize: '18px', fontWeight: 700, color: '#10B981', marginTop: '2px' }}>
+                          {base.alignedCount} Signals
+                        </div>
+                      </div>
+
+                      <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0E131F', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <span style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Flagged Drift Signals</span>
+                        <div style={{ fontSize: '18px', fontWeight: 700, color: '#EF4444', marginTop: '2px' }}>
+                          {base.driftedCount} Signals
+                        </div>
                       </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                      <button style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: '#D1D5DB',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                      }}>
+                        Calibrate Variance Threshold
+                      </button>
+                      <button style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        border: '1px solid rgba(99, 102, 241, 0.3)',
+                        color: '#A5B4FC',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                      }}>
+                        View Matched Signals
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Add Objective Modal */}
       {isModalOpen && (

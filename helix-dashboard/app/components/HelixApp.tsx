@@ -19,6 +19,7 @@ import { DepartmentDrawer } from './DepartmentDrawer';
 import { TelemetryStream } from './TelemetryStream';
 import { GenomeStudio } from './GenomeStudio';
 import { InterventionHub } from './InterventionHub';
+import { GenomeSpace3D } from './GenomeSpace3D';
 
 type ViewType = 'dashboard' | 'stream' | 'genome' | 'interventions';
 
@@ -312,21 +313,35 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
                 />
               </div>
 
-              {/* Main Section: Departmental Heatmap Matrix */}
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
-                    Departmental Behavioral Drift Matrix
-                  </h3>
-                  <span style={{ fontSize: '11px', color: '#6B7280' }}>
-                    Click "Inspect" on any tile for deep telemetry trajectory
-                  </span>
+              {/* Main Section: Heatmap & 3D Genome Space */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '24px', alignItems: 'flex-start' }}>
+                {/* Heatmap Matrix column */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
+                      Departmental Behavioral Drift Matrix
+                    </h3>
+                    <span style={{ fontSize: '11px', color: '#6B7280' }}>
+                      Click "Inspect" on any tile for deep telemetry trajectory
+                    </span>
+                  </div>
+
+                  <HeatmapMatrix
+                    departments={departments}
+                    onInspectDepartment={handleInspectDepartment}
+                  />
                 </div>
 
-                <HeatmapMatrix
-                  departments={departments}
-                  onInspectDepartment={handleInspectDepartment}
-                />
+                {/* 3D Genome Space column */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
+                      3D Interactive Cognitive Genome Space (S, P, C, M)
+                    </h3>
+                  </div>
+
+                  <GenomeSpace3D departments={departments} />
+                </div>
               </div>
             </div>
           )}
@@ -346,7 +361,6 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
             <GenomeStudio
               baselines={baselines}
               onAddBaseline={handleAddBaseline}
-              departments={departments}
             />
           )}
 
