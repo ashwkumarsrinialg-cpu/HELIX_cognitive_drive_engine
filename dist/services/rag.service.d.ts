@@ -1,5 +1,6 @@
 export declare class RAGService {
-    private apiBaseUrl;
+    private apiBaseUrls;
+    private makeRequest;
     askQuestion(question: string, department?: string, topK?: number): Promise<any>;
     analyzeDrift(department: string, signals: string[]): Promise<any>;
 }

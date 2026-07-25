@@ -6,12 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Module } from '@nitrostack/core';
 import { HelixModule } from './modules/helix/helix.module.js';
+import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     Module({
         name: 'app',
-        imports: [HelixModule]
+        imports: [HelixModule, AnalyticsModule]
     })
 ], AppModule);
 export { AppModule };
