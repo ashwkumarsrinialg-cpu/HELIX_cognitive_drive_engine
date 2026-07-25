@@ -395,7 +395,7 @@
         .progress-bar-bg { height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { height: 100%; background: var(--accent-purple); border-radius: 2px; }
 
-        /* 3D 4-Vector Cognitive Genome Container (Requested Feature) */
+        /* 3D 4-Vector Cognitive Genome Container */
         .genome-3d-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -422,7 +422,10 @@
             background: #080a10;
             border: 1px solid var(--border-color);
             position: relative;
+            cursor: grab;
         }
+
+        .threejs-canvas-wrapper:active { cursor: grabbing; }
 
         .vector-legend-grid {
             display: grid;
@@ -452,6 +455,59 @@
             font-size: 0.85rem;
             font-weight: 800;
             color: var(--accent-cyan);
+        }
+
+        /* Search & Filter Toolbar */
+        .toolbar-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 14px 20px;
+            border-radius: 12px;
+            gap: 16px;
+        }
+
+        .search-input-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 8px;
+            flex: 1;
+            max-width: 350px;
+        }
+
+        .search-input-box input {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .filter-btn-group { display: flex; gap: 8px; }
+
+        .btn-filter {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filter.active {
+            background: var(--accent-purple);
+            color: #fff;
+            border-color: var(--accent-purple);
         }
 
         /* Department Matrix Grid */
@@ -764,7 +820,7 @@
         .status-pill.escalated { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
         .status-pill.actioned { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
 
-        /* Action Input Modal */
+        /* Action Input Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -831,6 +887,21 @@
         </div>
     </div>
 
+    <!-- Interactive OKR Baseline Builder Modal -->
+    <div class="modal-overlay" id="okrModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:1.1rem; font-weight:700;">Define Strategic OKR Baseline</h3>
+                <button onclick="closeOkrModal()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem;">&times;</button>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Add a new enterprise compliance policy baseline to the Genome Management Studio.</p>
+            <input type="text" id="okrCode" class="modal-input" placeholder="Baseline Code (e.g. SEC-02)...">
+            <input type="text" id="okrTitle" class="modal-input" placeholder="Policy Title (e.g. Data Retention Gateway)...">
+            <textarea id="okrDesc" class="modal-input" style="height:70px;" placeholder="Policy Rule Description..."></textarea>
+            <button class="btn-trigger-intervention" onclick="submitNewOkr()">Add Strategic Baseline Policy</button>
+        </div>
+    </div>
+
     <!-- Top Header -->
     <header class="header">
         <div class="header-left">
@@ -881,7 +952,7 @@
                     </a>
                     <a class="nav-item" onclick="switchTab('genome', this)">
                         <div class="nav-item-left"><i class="fa-solid fa-dna"></i> Genome Management</div>
-                        <span class="nav-badge okrs">5 OKRs</span>
+                        <span class="nav-badge okrs" id="badgeOkrsCount">5 OKRs</span>
                     </a>
                     <a class="nav-item" onclick="switchTab('interventions', this)">
                         <div class="nav-item-left"><i class="fa-solid fa-bell"></i> Nudge &amp; Interventions</div>
@@ -949,7 +1020,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-cube" style="color:var(--accent-cyan); margin-right:8px;"></i> 3D Interactive 4-Vector Cognitive Genome Model (S, P, C, M)</h3>
-                            <p style="font-size:0.8rem; color:var(--text-muted);">Rotating 3D Orbital Mesh reflecting real-time alignment coordinates</p>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Drag mouse to rotate 3D Mesh &bull; Scroll to zoom</p>
                         </div>
                         <button class="btn-resume" onclick="recalculate3DGenome()">Recalculate 3D Mesh</button>
                     </div>
@@ -984,6 +1055,20 @@
                     </div>
                 </div>
 
+                <!-- Interactive Search & Filter Toolbar -->
+                <div class="toolbar-box">
+                    <div class="search-input-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i>
+                        <input type="text" id="deptSearchInput" placeholder="Filter departments by keyword or lead..." onkeyup="filterDepartments()">
+                    </div>
+                    <div class="filter-btn-group">
+                        <button class="btn-filter active" onclick="filterRisk('all', this)">All Units</button>
+                        <button class="btn-filter" onclick="filterRisk('severe', this)">Severe Drift</button>
+                        <button class="btn-filter" onclick="filterRisk('moderate', this)">Moderate</button>
+                        <button class="btn-filter" onclick="filterRisk('aligned', this)">Aligned</button>
+                    </div>
+                </div>
+
                 <!-- Departmental Behavioral Drift Matrix -->
                 <div class="matrix-section">
                     <div class="matrix-header">
@@ -991,9 +1076,9 @@
                         <div class="matrix-sub">Click "Inspect" on any tile for deep telemetry trajectory</div>
                     </div>
 
-                    <div class="dept-grid">
+                    <div class="dept-grid" id="deptGrid">
                         <!-- Engineering -->
-                        <div class="dept-card">
+                        <div class="dept-card" data-dept-name="engineering" data-risk-level="severe">
                             <div class="dept-header">
                                 <div class="dept-info">
                                     <div class="dept-avatar">ENG</div>
@@ -1029,7 +1114,7 @@
                         </div>
 
                         <!-- Product -->
-                        <div class="dept-card">
+                        <div class="dept-card" data-dept-name="product" data-risk-level="moderate">
                             <div class="dept-header">
                                 <div class="dept-info">
                                     <div class="dept-avatar" style="color: #f59e0b;">PRD</div>
@@ -1065,7 +1150,7 @@
                         </div>
 
                         <!-- Legal & Risk -->
-                        <div class="dept-card">
+                        <div class="dept-card" data-dept-name="legal & risk" data-risk-level="moderate">
                             <div class="dept-header">
                                 <div class="dept-info">
                                     <div class="dept-avatar" style="color: #f59e0b;">LGL</div>
@@ -1101,7 +1186,7 @@
                         </div>
 
                         <!-- Sales & Revenue -->
-                        <div class="dept-card">
+                        <div class="dept-card" data-dept-name="sales & revenue" data-risk-level="aligned">
                             <div class="dept-header">
                                 <div class="dept-info">
                                     <div class="dept-avatar" style="color: #10b981;">SLS</div>
@@ -1137,7 +1222,7 @@
                         </div>
 
                         <!-- Global Marketing -->
-                        <div class="dept-card">
+                        <div class="dept-card" data-dept-name="global marketing" data-risk-level="aligned">
                             <div class="dept-header">
                                 <div class="dept-info">
                                     <div class="dept-avatar" style="color: #10b981;">MKT</div>
@@ -1243,18 +1328,18 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: GENOME MANAGEMENT STUDIO WITH KEY COUNTERS -->
+            <!-- VIEW 3: GENOME MANAGEMENT STUDIO WITH KEY COUNTERS & OKR BUILDER -->
             <div class="tab-view" id="view-genome">
                 <div class="page-header">
                     <div>
                         <h2>Genome Management Studio</h2>
                         <p>Define, calibrate, and enforce enterprise strategic baselines &amp; OKR policies</p>
                     </div>
-                    <button class="btn-quick-inject" onclick="showToast('⚡ Strategic Objective Added')"><i class="fa-solid fa-plus"></i> Add Strategic Objective</button>
+                    <button class="btn-quick-inject" onclick="openOkrModal()"><i class="fa-solid fa-plus"></i> Add Strategic Objective</button>
                 </div>
 
                 <div class="table-card">
-                    <div style="display:flex; flex-direction:column; gap:20px;">
+                    <div style="display:flex; flex-direction:column; gap:20px;" id="okrListContainer">
                         <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:20px; border-radius:12px; display:flex; flex-direction:column; gap:12px;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <div style="display:flex; gap:10px; align-items:center;">
@@ -1445,7 +1530,7 @@
         </button>
     </div>
 
-    <!-- JavaScript, Three.js 3D Engine, & Event Listeners -->
+    <!-- JavaScript, Three.js 3D Engine, Orbit Drag, Particles & Event Listeners -->
     <script>
         const BACKEND_URL = "http://localhost:8001";
         let activeLeadName = "Marcus Vance";
@@ -1454,15 +1539,17 @@
         // Current 4-Vector Genome Alignment Coordinates (S, P, C, M)
         let genomeCoords = { S: 98.0, P: 99.0, C: 99.5, M: 100.0 };
 
-        // Three.js 3D Orbital Mesh Engine
-        let scene, camera, renderer, meshGroup;
+        // Three.js 3D Orbital Mesh Engine + Mouse Drag Orbit & Particles
+        let scene, camera, renderer, meshGroup, particlesGroup;
+        let isMouseDown = false, mouseX = 0, mouseY = 0;
+
         function init3DGenome() {
             const container = document.getElementById('threejsContainer');
             if (!container) return;
 
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.z = 5;
+            camera.position.z = 5.2;
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -1471,13 +1558,13 @@
             meshGroup = new THREE.Group();
             scene.add(meshGroup);
 
-            // Create 3D Wireframe Tetrahedron / Orbital Sphere Mesh
+            // 1. Wireframe Polyhedron Mesh
             const geom = new THREE.IcosahedronGeometry(1.6, 1);
             const mat = new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.35 });
             const sphereMesh = new THREE.Mesh(geom, mat);
             meshGroup.add(sphereMesh);
 
-            // Add Glowing Node Spheres for the 4 Vertices (S, P, C, M)
+            // 2. Glowing Nodes (S, P, C, M)
             const nodeGeom = new THREE.SphereGeometry(0.12, 16, 16);
             
             const nodeS = new THREE.Mesh(nodeGeom, new THREE.MeshBasicMaterial({ color: 0x00f2fe }));
@@ -1496,11 +1583,55 @@
             nodeM.position.set(0, 0, 1.6);
             meshGroup.add(nodeM);
 
-            // Animate 3D Rotation
+            // 3. Cybernetic Floating Particles Cloud
+            particlesGroup = new THREE.Group();
+            const partGeom = new THREE.BufferGeometry();
+            const partCount = 120;
+            const posArray = new Float32Array(partCount * 3);
+
+            for (let i = 0; i < partCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 6;
+            }
+            partGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const partMat = new THREE.PointsMaterial({ size: 0.03, color: 0x00f2fe, transparent: true, opacity: 0.6 });
+            const particleSystem = new THREE.Points(partGeom, partMat);
+            particlesGroup.add(particleSystem);
+            scene.add(particlesGroup);
+
+            // Mouse Drag Orbit Controls
+            container.addEventListener('mousedown', (e) => {
+                isMouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            window.addEventListener('mouseup', () => { isMouseDown = false; });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isMouseDown) return;
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                meshGroup.rotation.y += deltaX * 0.005;
+                meshGroup.rotation.x += deltaY * 0.005;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.002;
+                if (camera.position.z < 3) camera.position.z = 3;
+                if (camera.position.z > 8) camera.position.z = 8;
+            });
+
+            // Render Animation Loop
             function animate() {
                 requestAnimationFrame(animate);
-                meshGroup.rotation.y += 0.008;
-                meshGroup.rotation.x += 0.004;
+                if (!isMouseDown) {
+                    meshGroup.rotation.y += 0.006;
+                    meshGroup.rotation.x += 0.003;
+                }
+                particlesGroup.rotation.y -= 0.002;
                 renderer.render(scene, camera);
             }
             animate();
@@ -1584,6 +1715,35 @@
             }, 1800);
         }
 
+        // Search & Filtering System for Department Grid
+        let currentActiveRiskFilter = 'all';
+
+        function filterDepartments() {
+            const query = document.getElementById('deptSearchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#deptGrid .dept-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-dept-name') || '';
+                const risk = card.getAttribute('data-risk-level') || '';
+
+                const matchesQuery = name.includes(query) || card.innerText.toLowerCase().includes(query);
+                const matchesRisk = (currentActiveRiskFilter === 'all') || (risk === currentActiveRiskFilter);
+
+                if (matchesQuery && matchesRisk) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterRisk(riskLevel, btn) {
+            currentActiveRiskFilter = riskLevel;
+            document.querySelectorAll('.filter-btn-group .btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterDepartments();
+        }
+
         // SPA Tab Switching
         function switchTab(tabId, el) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -1626,11 +1786,27 @@
         });
 
         // Modals for Adding Signals / Employee Documents
-        function openSignalModal() {
-            document.getElementById('signalModal').style.display = 'flex';
-        }
-        function closeSignalModal() {
-            document.getElementById('signalModal').style.display = 'none';
+        function openSignalModal() { document.getElementById('signalModal').style.display = 'flex'; }
+        function closeSignalModal() { document.getElementById('signalModal').style.display = 'none'; }
+
+        // Modals for Adding OKR Baselines
+        function openOkrModal() { document.getElementById('okrModal').style.display = 'flex'; }
+        function closeOkrModal() { document.getElementById('okrModal').style.display = 'none'; }
+
+        function submitNewOkr() {
+            const code = document.getElementById('okrCode').value.trim() || "SEC-02";
+            const title = document.getElementById('okrTitle').value.trim() || "Data Retention Gateway Policy";
+            const desc = document.getElementById('okrDesc').value.trim() || "All customer telemetry must pass encrypted retention gating.";
+
+            closeOkrModal();
+
+            const container = document.getElementById('okrListContainer');
+            const div = document.createElement('div');
+            div.style.cssText = "background:var(--bg-sidebar); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;";
+            div.innerHTML = `<div><span style="font-size:0.75rem; font-weight:800; background:rgba(99,102,241,0.2); color:#818cf8; padding:4px 8px; border-radius:4px;">${code}</span> <strong style="margin-left:8px;">${title}</strong></div><span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;15% &bull; Active</span>`;
+            container.appendChild(div);
+
+            showToast(`✅ OKR Baseline Policy ${code} Added to Studio`);
         }
 
         async function submitSignalInjection() {
