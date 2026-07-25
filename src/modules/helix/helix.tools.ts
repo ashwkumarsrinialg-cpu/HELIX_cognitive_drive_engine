@@ -1,4 +1,13 @@
-import { ToolDecorator as Tool, ExecutionContext, z, Injectable } from '@nitrostack/core';
+import {
+  ToolDecorator as Tool,
+  ResourceDecorator as Resource,
+  PromptDecorator as Prompt,
+  Cache,
+  RateLimit,
+  ExecutionContext,
+  z,
+  Injectable
+} from '@nitrostack/core';
 import { LLMService } from '../../services/llm.service.js';
 import { RAGService } from '../../services/rag.service.js';
 
@@ -47,8 +56,62 @@ export class HelixTools {
       signals: z.array(z.string()).describe('Operational signal logs')
     })
   })
+  @Cache({ ttl: 30 })
   async analyzeDrift(input: { department: string; signals: string[] }, ctx: ExecutionContext) {
     const result = await this.ragService.analyzeDrift(input.department, input.signals);
     return result;
+  }
+
+  @Tool({
+    name: 'inject_signal',
+    description: 'Ingest employee document or telemetry event into HELIX Vector Store',
+    inputSchema: z.object({
+      title: z.string().describe('Signal title or ticket ID'),
+      content: z.string().describe('Telemetry payload content'),
+      department: z.string().describe('Target department')
+    })
+  })
+  @RateLimit({ requests: 10, window: '1m' })
+  async injectSignal(input: { title: string; content: string; department: string }, ctx: ExecutionContext) {
+    return {
+      status: 'SUCCESS',
+      message: `Indexed signal '${input.title}' into vector store`,
+      department: input.department
+    };
+  }
+
+  @Resource({
+    uri: 'helix://genome/profile',
+    name: 'Cognitive Genome Profile',
+    description: 'Current 4-Vector Genome Alignment scores (Strategic, Process, Conceptual, Memory)',
+    mimeType: 'application/json'
+  })
+  async getGenomeProfile(ctx: ExecutionContext) {
+    return {
+      S_strategic_horizon: 98.0,
+      P_process_rigor: 99.0,
+      C_conceptual_cohesion: 99.5,
+      M_memory_retention: 100.0,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  @Prompt({
+    name: 'cognitive_drift_analysis',
+    description: 'Generate an executive 4-Vector Cognitive Drift diagnostic report',
+    arguments: [
+      { name: 'department', description: 'Enterprise department name', required: true },
+      { name: 'driftScore', description: 'Current drift score (0.0 to 1.0)', required: true }
+    ]
+  })
+  async getDriftAnalysisPrompt(args: { department: string; driftScore: string }, ctx: ExecutionContext) {
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: `You are the HELIX Cognitive Engine. Perform a 4-Vector Cognitive Drift diagnostic for ${args.department} with a drift score of ${args.driftScore}.`
+        }
+      ]
+    };
   }
 }

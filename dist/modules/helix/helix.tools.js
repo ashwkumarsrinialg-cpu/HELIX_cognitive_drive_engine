@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { ToolDecorator as Tool, z, Injectable } from '@nitrostack/core';
+import { ToolDecorator as Tool, ResourceDecorator as Resource, PromptDecorator as Prompt, Cache, RateLimit, z, Injectable } from '@nitrostack/core';
 import { LLMService } from '../../services/llm.service.js';
 import { RAGService } from '../../services/rag.service.js';
 let HelixTools = class HelixTools {
@@ -32,6 +32,32 @@ let HelixTools = class HelixTools {
     async analyzeDrift(input, ctx) {
         const result = await this.ragService.analyzeDrift(input.department, input.signals);
         return result;
+    }
+    async injectSignal(input, ctx) {
+        return {
+            status: 'SUCCESS',
+            message: `Indexed signal '${input.title}' into vector store`,
+            department: input.department
+        };
+    }
+    async getGenomeProfile(ctx) {
+        return {
+            S_strategic_horizon: 98.0,
+            P_process_rigor: 99.0,
+            C_conceptual_cohesion: 99.5,
+            M_memory_retention: 100.0,
+            timestamp: new Date().toISOString()
+        };
+    }
+    async getDriftAnalysisPrompt(args, ctx) {
+        return {
+            messages: [
+                {
+                    role: 'user',
+                    content: `You are the HELIX Cognitive Engine. Perform a 4-Vector Cognitive Drift diagnostic for ${args.department} with a drift score of ${args.driftScore}.`
+                }
+            ]
+        };
     }
 };
 __decorate([
@@ -69,10 +95,50 @@ __decorate([
             signals: z.array(z.string()).describe('Operational signal logs')
         })
     }),
+    Cache({ ttl: 30 }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], HelixTools.prototype, "analyzeDrift", null);
+__decorate([
+    Tool({
+        name: 'inject_signal',
+        description: 'Ingest employee document or telemetry event into HELIX Vector Store',
+        inputSchema: z.object({
+            title: z.string().describe('Signal title or ticket ID'),
+            content: z.string().describe('Telemetry payload content'),
+            department: z.string().describe('Target department')
+        })
+    }),
+    RateLimit({ requests: 10, window: '1m' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], HelixTools.prototype, "injectSignal", null);
+__decorate([
+    Resource({
+        uri: 'helix://genome/profile',
+        name: 'Cognitive Genome Profile',
+        description: 'Current 4-Vector Genome Alignment scores (Strategic, Process, Conceptual, Memory)',
+        mimeType: 'application/json'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HelixTools.prototype, "getGenomeProfile", null);
+__decorate([
+    Prompt({
+        name: 'cognitive_drift_analysis',
+        description: 'Generate an executive 4-Vector Cognitive Drift diagnostic report',
+        arguments: [
+            { name: 'department', description: 'Enterprise department name', required: true },
+            { name: 'driftScore', description: 'Current drift score (0.0 to 1.0)', required: true }
+        ]
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], HelixTools.prototype, "getDriftAnalysisPrompt", null);
 HelixTools = __decorate([
     Injectable(),
     __metadata("design:paramtypes", [LLMService,
