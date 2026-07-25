@@ -56,3 +56,9 @@ uploads/
 *.key
 tokens.json
 .nitrostudio/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
