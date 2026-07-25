@@ -8,6 +8,8 @@ interface TelemetryStreamProps {
   isStreaming: boolean;
   onToggleStreaming: () => void;
   onSimulateSignal: () => void;
+  onTriggerNudge?: (deptName: string, baselineTitle: string) => void;
+  onShowToast?: (msg: string) => void;
 }
 
 export const TelemetryStream: React.FC<TelemetryStreamProps> = ({
@@ -85,7 +87,8 @@ export const TelemetryStream: React.FC<TelemetryStreamProps> = ({
       {/* Header & Controls */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#FFFFFF' }}>
+          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="live-pulse" style={{ backgroundColor: '#10B981', width: '10px', height: '10px' }} />
             Live Telemetry Stream
           </h2>
           <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#9CA3AF' }}>
@@ -444,17 +447,25 @@ export const TelemetryStream: React.FC<TelemetryStreamProps> = ({
                         </div>
 
                         <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-                          <button style={{
-                            flex: 1,
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            backgroundColor: '#6366F1',
-                            color: '#FFFFFF',
-                            border: 'none',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}>
+                          <button
+                            onClick={() => {
+                              if (onTriggerNudge && onShowToast) {
+                                onTriggerNudge(signal.department, `⚠️ Automated Nudge sent to sender: Policy violation detected.`);
+                                onShowToast(`✅ Slack Nudge Sent via Webhook`);
+                              }
+                            }}
+                            style={{
+                              flex: 1,
+                              padding: '8px 12px',
+                              borderRadius: '6px',
+                              backgroundColor: '#6366F1',
+                              color: '#FFFFFF',
+                              border: 'none',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
                             Dispatch Nudge Intervention
                           </button>
                           <button style={{

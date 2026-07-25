@@ -45,6 +45,33 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
   const [interventions, setInterventions] = useState<InterventionLog[]>(INITIAL_INTERVENTIONS);
   const [inspectedDept, setInspectedDept] = useState<DepartmentDrift | null>(null);
 
+  const [toast, setToast] = useState<{ message: string; visible: boolean } | null>(null);
+  const [ingestRate, setIngestRate] = useState(1412);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIngestRate((prev) => {
+        const delta = Math.floor(Math.random() * 40 - 20); // fluctuate between -20 and +20
+        const newVal = prev + delta;
+        return Math.max(1390, Math.min(1445, newVal));
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (toast && toast.visible) {
+      const timer = setTimeout(() => {
+        setToast((prev) => prev ? { ...prev, visible: false } : null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (message: string) => {
+    setToast({ message, visible: true });
+  };
+
   // Sync tool output if passed from MCP tool
   const toolData = getToolOutput<any>();
   useEffect(() => {
@@ -212,8 +239,8 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#9CA3AF' }}>
-              <span className="live-pulse" style={{ backgroundColor: '#6366F1' }} />
-              <span>Telemetry Ingest: <strong style={{ color: '#E5E7EB' }}>1.4k events/min</strong></span>
+              <span className="live-pulse" style={{ backgroundColor: '#10B981' }} />
+              <span>Telemetry Ingest: <strong style={{ color: '#E5E7EB' }}>{ingestRate.toLocaleString()} events/min</strong></span>
             </div>
 
             <button
@@ -310,6 +337,8 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
               isStreaming={!!widgetState?.isStreaming}
               onToggleStreaming={() => setWidgetState({ ...widgetState, isStreaming: !widgetState?.isStreaming })}
               onSimulateSignal={handleSimulateSignal}
+              onTriggerNudge={handleTriggerNudge}
+              onShowToast={showToast}
             />
           )}
 
@@ -338,7 +367,30 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
         }}
         telemetries={signals}
         onTriggerNudge={handleTriggerNudge}
+        baselines={baselines}
+        onShowToast={showToast}
       />
+
+      {/* Toast Notification */}
+      {toast && toast.visible && (
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#0F172A',
+          border: '1px solid #10B981',
+          borderRadius: '8px',
+          padding: '12px 24px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(16, 185, 129, 0.25)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 }

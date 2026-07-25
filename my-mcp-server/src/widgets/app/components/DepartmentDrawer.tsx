@@ -1,13 +1,15 @@
 'use client';
 
 import React from 'react';
-import { DepartmentDrift, TelemetrySignal } from '../data/mockData';
+import { DepartmentDrift, TelemetrySignal, StrategicBaseline } from '../data/mockData';
 
 interface DepartmentDrawerProps {
   department: DepartmentDrift | null;
   onClose: () => void;
   telemetries: TelemetrySignal[];
   onTriggerNudge: (deptName: string, baselineTitle: string) => void;
+  baselines: StrategicBaseline[];
+  onShowToast: (msg: string) => void;
 }
 
 export const DepartmentDrawer: React.FC<DepartmentDrawerProps> = ({
@@ -15,6 +17,8 @@ export const DepartmentDrawer: React.FC<DepartmentDrawerProps> = ({
   onClose,
   telemetries,
   onTriggerNudge,
+  baselines,
+  onShowToast,
 }) => {
   if (!department) return null;
 
@@ -22,6 +26,12 @@ export const DepartmentDrawer: React.FC<DepartmentDrawerProps> = ({
     (t) => t.department.toLowerCase() === department.name.toLowerCase() ||
            (department.name.includes('Legal') && t.department.includes('Legal'))
   );
+
+  const primarySignal = deptTelemetries.find(t => t.severity === 'High') || deptTelemetries[0];
+  
+  const matchedBaseline = primarySignal 
+    ? baselines.find(b => b.title === primarySignal.matchedBaselineTitle || b.id === primarySignal.matchedBaselineId)
+    : null;
 
   const getStatusColor = (status: DepartmentDrift['status']) => {
     switch (status) {
@@ -156,6 +166,99 @@ export const DepartmentDrawer: React.FC<DepartmentDrawerProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Interactive Nudge & Policy Section */}
+          {primarySignal && (
+            <div style={{
+              padding: '16px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(239, 68, 68, 0.05)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '14px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '14px' }}>🚨</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Active Strategic Variance
+                </span>
+              </div>
+
+              {/* Telemetry Raw Stream */}
+              <div>
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+                  Telemetry Raw Stream
+                </span>
+                <div style={{
+                  fontFamily: 'monospace',
+                  fontSize: '11.5px',
+                  color: '#E5E7EB',
+                  backgroundColor: '#090D15',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  lineHeight: '1.4',
+                  whiteSpace: 'pre-wrap',
+                }}>
+                  {primarySignal.fullRawMessage}
+                </div>
+              </div>
+
+              {/* Enterprise Policy Violated */}
+              <div>
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+                  Enterprise Policy Violated
+                </span>
+                <div style={{
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                  border: '1px solid rgba(99, 102, 241, 0.15)',
+                }}>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#818CF8', marginBottom: '4px' }}>
+                    {matchedBaseline ? `${matchedBaseline.code}: ${matchedBaseline.title}` : primarySignal.matchedBaselineTitle}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#9CA3AF', lineHeight: '1.4' }}>
+                    {matchedBaseline ? matchedBaseline.description : 'Standard baseline parameters exceeded.'}
+                  </div>
+                </div>
+              </div>
+
+              {/* One-Click Nudge Action */}
+              <div>
+                <button
+                  onClick={() => {
+                    const leadName = department.lead.split(' (')[0];
+                    onTriggerNudge(department.name, `⚠️ Automated Nudge sent to ${leadName}: Policy violation detected.`);
+                    onShowToast(`✅ Slack Nudge Sent via Webhook`);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    backgroundColor: '#10B981',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg>
+                  Send Slack Nudge to {department.lead.split(' (')[0]}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* 7-Day Trend Chart */}
           <div style={{ padding: '16px', borderRadius: '12px', backgroundColor: 'rgba(22, 27, 38, 0.8)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
