@@ -115,15 +115,29 @@ def run_standalone_server(port: int = 8000):
                 t = body.get("title", "Doc")
                 c = body.get("content", "")
                 d = body.get("department", "General Enterprise")
-                res = rag_pipeline.add_document(title=t, content=c, department=d)
+                doc_id = f"doc-{uuid.uuid4().hex[:8]}"
+                res_chunks = rag_pipeline.add_document(
+                    title=t,
+                    content=c,
+                    department=d,
+                    source="User Telemetry Stream",
+                    doc_id=doc_id
+                )
                 doc_count = rag_pipeline.qdrant.count()
-                res["updated_genome_profile"] = {
-                    "S": round(min(100.0, 95.0 + (doc_count * 0.5)), 1),
-                    "P": round(min(100.0, 96.0 + (doc_count * 0.4)), 1),
-                    "C": round(min(100.0, 97.0 + (doc_count * 0.3)), 1),
-                    "M": round(min(100.0, 98.0 + (doc_count * 0.2)), 1)
+                res = {
+                    "status": "SUCCESS",
+                    "doc_id": doc_id,
+                    "indexed_chunks": len(res_chunks),
+                    "total_indexed": doc_count,
+                    "updated_genome_profile": {
+                        "S": round(min(100.0, 95.0 + (doc_count * 0.5)), 1),
+                        "P": round(min(100.0, 96.0 + (doc_count * 0.4)), 1),
+                        "C": round(min(100.0, 97.0 + (doc_count * 0.3)), 1),
+                        "M": round(min(100.0, 98.0 + (doc_count * 0.2)), 1)
+                    }
                 }
                 self._send_json(res)
+
             else:
                 self._send_json({"status": "SUCCESS", "message": "HELIX MCP Request Received"})
 
