@@ -17,6 +17,9 @@ import uuid
 from typing import Dict, Any, List, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 
 from ai.llm import LLMClient
 from ai.embeddings import EmbeddingEngine
