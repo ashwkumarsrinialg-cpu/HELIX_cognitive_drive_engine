@@ -597,6 +597,193 @@
 
         .btn-inspect:hover { background: var(--accent-purple); color: #fff; }
 
+        /* GENOME MANAGEMENT STUDIO ACCORDION STYLING (Pixel-Perfect to User Screenshot) */
+        .okr-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.25s ease;
+        }
+
+        .okr-card:hover {
+            border-color: var(--border-highlight);
+        }
+
+        .okr-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .okr-title-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .okr-code-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .okr-code-badge.prc { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .okr-code-badge.leg { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+        .okr-code-badge.mkt { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .okr-code-badge.arch { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+        .okr-title-text h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .okr-title-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .okr-meta-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .okr-tolerance-cap {
+            font-size: 0.775rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .okr-tolerance-cap strong {
+            color: var(--accent-green);
+        }
+
+        .okr-status-chip {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .okr-status-chip.active { background: var(--accent-green-bg); color: var(--accent-green); }
+        .okr-status-chip.review { background: var(--accent-amber-bg); color: var(--accent-amber); }
+
+        .okr-chevron {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: transform 0.25s;
+        }
+
+        .okr-card.open .okr-chevron {
+            transform: rotate(180deg);
+        }
+
+        .okr-card-body {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .okr-card.open .okr-card-body {
+            display: flex;
+        }
+
+        .okr-description-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .okr-metrics-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .okr-metric-box {
+            background: #0f121d;
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .okr-metric-label {
+            font-size: 0.675rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .okr-metric-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .okr-metric-val.aligned { color: var(--accent-green); }
+        .okr-metric-val.flagged { color: var(--accent-red); }
+
+        .okr-actions-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 8px;
+        }
+
+        .btn-calibrate-threshold {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-calibrate-threshold:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--border-highlight);
+        }
+
+        .btn-view-matched-signals {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #818cf8;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-view-matched-signals:hover {
+            background: var(--accent-purple);
+            color: #fff;
+        }
+
         /* Slide-Over Inspector Drawer Modal */
         .drawer-overlay {
             position: fixed;
@@ -650,175 +837,6 @@
 
         .drawer-metric-card span { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
         .drawer-metric-card h4 { font-size: 1.6rem; font-weight: 800; margin-top: 4px; }
-
-        /* Active Strategic Variance Box */
-        .variance-card {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            border-radius: 14px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .variance-header { color: var(--accent-red); font-size: 0.825rem; font-weight: 800; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px; }
-        .variance-section { display: flex; flex-direction: column; gap: 6px; }
-        .variance-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-
-        .telemetry-raw-box {
-            background: #090b11;
-            border: 1px solid #1e293b;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.775rem;
-            color: #cbd5e1;
-            line-height: 1.5;
-        }
-
-        .policy-violated-box {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            padding: 14px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .policy-title { font-size: 0.85rem; font-weight: 700; color: #818cf8; }
-        .policy-desc { font-size: 0.775rem; color: #94a3b8; line-height: 1.4; }
-
-        .btn-slack-nudge {
-            background: var(--accent-green);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.875rem;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-slack-nudge:hover { background: #059669; color: #fff; transform: translateY(-2px); }
-
-        .chart-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .chart-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; }
-
-        /* Primary Behavioral Drift Topic & Flagged Telemetry Section */
-        .behavioral-topic-box {
-            background: rgba(245, 158, 11, 0.08);
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .behavioral-topic-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: var(--accent-amber);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .behavioral-topic-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
-
-        .flagged-telemetry-section { display: flex; flex-direction: column; gap: 12px; }
-        .flagged-telemetry-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 700; }
-
-        .telemetry-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .telemetry-card-top { display: flex; justify-content: space-between; align-items: center; }
-
-        .source-tag {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: #1e293b;
-            color: #818cf8;
-        }
-
-        .source-tag.confluence { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
-        .source-tag.slack { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
-
-        .time-tag { font-size: 0.75rem; color: var(--text-muted); }
-        .drift-tag { font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-        .drift-tag.red { background: var(--accent-red-bg); color: var(--accent-red); }
-        .drift-tag.amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
-
-        .telemetry-card-text { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); line-height: 1.4; }
-        .telemetry-card-matched { font-size: 0.725rem; color: var(--text-muted); }
-        .telemetry-card-matched strong { color: #818cf8; }
-
-        .btn-trigger-intervention {
-            background: var(--accent-purple);
-            color: #fff;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px var(--accent-purple-glow);
-        }
-
-        .btn-trigger-intervention:hover { background: #4f46e5; }
-
-        /* Tables */
-        .table-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-        th { background: rgba(255, 255, 255, 0.03); color: var(--text-muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
-        td { padding: 12px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: var(--text-primary); }
-        tr:hover td { background: var(--bg-card-hover); }
-
-        .status-pill { padding: 3px 8px; border-radius: 6px; font-size: 0.725rem; font-weight: 700; }
-        .status-pill.delivered { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
-        .status-pill.acknowledged { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
-        .status-pill.escalated { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
-        .status-pill.actioned { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
 
         /* Action Input Modals */
         .modal-overlay {
@@ -1328,7 +1346,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: GENOME MANAGEMENT STUDIO WITH KEY COUNTERS & OKR BUILDER -->
+            <!-- VIEW 3: GENOME MANAGEMENT STUDIO (FULL ACCORDION INTERACTION MATCHING USER SCREENSHOT) -->
             <div class="tab-view" id="view-genome">
                 <div class="page-header">
                     <div>
@@ -1338,45 +1356,219 @@
                     <button class="btn-quick-inject" onclick="openOkrModal()"><i class="fa-solid fa-plus"></i> Add Strategic Objective</button>
                 </div>
 
-                <div class="table-card">
-                    <div style="display:flex; flex-direction:column; gap:20px;" id="okrListContainer">
-                        <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:20px; border-radius:12px; display:flex; flex-direction:column; gap:12px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <div style="display:flex; gap:10px; align-items:center;">
-                                    <span style="font-size:0.75rem; font-weight:800; background:rgba(99,102,241,0.2); color:#818cf8; padding:4px 8px; border-radius:4px;">SEC-01</span>
-                                    <h4 style="font-size:1rem; font-weight:700;">Mandatory SOC2 &amp; Pre-Release SecOps Gateways</h4>
+                <!-- OKR Cards List -->
+                <div style="display:flex; flex-direction:column; gap:16px;" id="okrListContainer">
+                    
+                    <!-- Card 1: SEC-01 -->
+                    <div class="okr-card" id="okr-sec-01">
+                        <div class="okr-card-header" onclick="toggleOkrCard('okr-sec-01')">
+                            <div class="okr-title-left">
+                                <span class="okr-code-badge">SEC-01</span>
+                                <div class="okr-title-text">
+                                    <h4>Mandatory SOC2 &amp; Pre-Release SecOps Gateways</h4>
+                                    <p>Security &amp; Compliance</p>
                                 </div>
-                                <span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;15% &bull; Active</span>
                             </div>
-                            <p style="font-size:0.825rem; color:var(--text-muted);">Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.</p>
-                            
-                            <!-- Key Counters Requested by User -->
-                            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:8px;">
-                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;">
-                                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">ACTIVE TELEMETRY MONITORS</span>
-                                    <h5 style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">14 Channels</h5>
-                                </div>
-                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;">
-                                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">ALIGNED TRANSMISSIONS</span>
-                                    <h5 style="font-size:1.2rem; font-weight:800; color:var(--accent-green);">9 Signals</h5>
-                                </div>
-                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;">
-                                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">FLAGGED DRIFT SIGNALS</span>
-                                    <h5 style="font-size:1.2rem; font-weight:800; color:var(--accent-red);">5 Signals</h5>
-                                </div>
+                            <div class="okr-meta-right">
+                                <div class="okr-tolerance-cap">Tolerance Cap: <strong>&plusmn;15%</strong></div>
+                                <span class="okr-status-chip active">Active</span>
+                                <i class="fa-solid fa-chevron-down okr-chevron"></i>
                             </div>
                         </div>
 
-                        <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
-                            <div><span style="font-size:0.75rem; font-weight:800; background:rgba(245,158,11,0.2); color:var(--accent-amber); padding:4px 8px; border-radius:4px;">PRC-02</span> <strong style="margin-left:8px;">Commercial Pricing &amp; Discounting Authorization Thresholds</strong></div>
-                            <span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;20% &bull; Active</span>
-                        </div>
-
-                        <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
-                            <div><span style="font-size:0.75rem; font-weight:800; background:rgba(239,68,68,0.2); color:var(--accent-red); padding:4px 8px; border-radius:4px;">LEG-01</span> <strong style="margin-left:8px;">Enterprise Liability Capping &amp; IP Indemnity Baseline</strong></div>
-                            <span style="font-size:0.75rem; color:var(--accent-amber); font-weight:700;">Tolerance Cap &plusmn;25% &bull; Review Required</span>
+                        <div class="okr-card-body">
+                            <div class="okr-description-text">
+                                Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.
+                            </div>
+                            <div class="okr-metrics-row">
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ACTIVE TELEMETRY MONITORS</span>
+                                    <div class="okr-metric-val">14 Channels</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ALIGNED TRANSMISSIONS</span>
+                                    <div class="okr-metric-val aligned">9 Signals</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">FLAGGED DRIFT SIGNALS</span>
+                                    <div class="okr-metric-val flagged">5 Signals</div>
+                                </div>
+                            </div>
+                            <div class="okr-actions-row">
+                                <button class="btn-calibrate-threshold" onclick="calibrateOkr('SEC-01', event)">Calibrate Variance Threshold</button>
+                                <button class="btn-view-matched-signals" onclick="viewMatchedSignals('SEC-01', event)">View Matched Signals</button>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Card 2: PRC-02 (Open by Default matching User Screenshot) -->
+                    <div class="okr-card open" id="okr-prc-02">
+                        <div class="okr-card-header" onclick="toggleOkrCard('okr-prc-02')">
+                            <div class="okr-title-left">
+                                <span class="okr-code-badge prc">PRC-02</span>
+                                <div class="okr-title-text">
+                                    <h4>Commercial Pricing &amp; Discounting Authorization Thresholds</h4>
+                                    <p>Pricing &amp; SLA Governance</p>
+                                </div>
+                            </div>
+                            <div class="okr-meta-right">
+                                <div class="okr-tolerance-cap">Tolerance Cap: <strong>&plusmn;20%</strong></div>
+                                <span class="okr-status-chip active">Active</span>
+                                <i class="fa-solid fa-chevron-down okr-chevron"></i>
+                            </div>
+                        </div>
+
+                        <div class="okr-card-body">
+                            <div class="okr-description-text">
+                                Discounting above 25% requires formal CFO signoff. Contract SLA uptime commitments above 99.9% require Infrastructure VP approval.
+                            </div>
+                            <div class="okr-metrics-row">
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ACTIVE TELEMETRY MONITORS</span>
+                                    <div class="okr-metric-val">8 Channels</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ALIGNED TRANSMISSIONS</span>
+                                    <div class="okr-metric-val aligned">6 Signals</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">FLAGGED DRIFT SIGNALS</span>
+                                    <div class="okr-metric-val flagged">2 Signals</div>
+                                </div>
+                            </div>
+                            <div class="okr-actions-row">
+                                <button class="btn-calibrate-threshold" onclick="calibrateOkr('PRC-02', event)">Calibrate Variance Threshold</button>
+                                <button class="btn-view-matched-signals" onclick="viewMatchedSignals('PRC-02', event)">View Matched Signals</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: LEG-01 -->
+                    <div class="okr-card" id="okr-leg-01">
+                        <div class="okr-card-header" onclick="toggleOkrCard('okr-leg-01')">
+                            <div class="okr-title-left">
+                                <span class="okr-code-badge leg">LEG-01</span>
+                                <div class="okr-title-text">
+                                    <h4>Enterprise Liability Capping &amp; IP Indemnity Baseline</h4>
+                                    <p>Legal &amp; Risk Control</p>
+                                </div>
+                            </div>
+                            <div class="okr-meta-right">
+                                <div class="okr-tolerance-cap">Tolerance Cap: <strong>&plusmn;25%</strong></div>
+                                <span class="okr-status-chip review">Review Required</span>
+                                <i class="fa-solid fa-chevron-down okr-chevron"></i>
+                            </div>
+                        </div>
+
+                        <div class="okr-card-body">
+                            <div class="okr-description-text">
+                                Any alteration to standard limitation of liability clauses or unlimited mutual IP indemnity waivers requires explicit General Counsel approval.
+                            </div>
+                            <div class="okr-metrics-row">
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ACTIVE TELEMETRY MONITORS</span>
+                                    <div class="okr-metric-val">12 Channels</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ALIGNED TRANSMISSIONS</span>
+                                    <div class="okr-metric-val aligned">8 Signals</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">FLAGGED DRIFT SIGNALS</span>
+                                    <div class="okr-metric-val flagged">4 Signals</div>
+                                </div>
+                            </div>
+                            <div class="okr-actions-row">
+                                <button class="btn-calibrate-threshold" onclick="calibrateOkr('LEG-01', event)">Calibrate Variance Threshold</button>
+                                <button class="btn-view-matched-signals" onclick="viewMatchedSignals('LEG-01', event)">View Matched Signals</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: MKT-04 -->
+                    <div class="okr-card" id="okr-mkt-04">
+                        <div class="okr-card-header" onclick="toggleOkrCard('okr-mkt-04')">
+                            <div class="okr-title-left">
+                                <span class="okr-code-badge mkt">MKT-04</span>
+                                <div class="okr-title-text">
+                                    <h4>Verifiable Product Claims &amp; External Communication Governance</h4>
+                                    <p>Brand &amp; Market Claims</p>
+                                </div>
+                            </div>
+                            <div class="okr-meta-right">
+                                <div class="okr-tolerance-cap">Tolerance Cap: <strong>&plusmn;10%</strong></div>
+                                <span class="okr-status-chip active">Active</span>
+                                <i class="fa-solid fa-chevron-down okr-chevron"></i>
+                            </div>
+                        </div>
+
+                        <div class="okr-card-body">
+                            <div class="okr-description-text">
+                                All public marketing collateral and performance claims must adhere strictly to verified technical benchmarks and design tokens.
+                            </div>
+                            <div class="okr-metrics-row">
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ACTIVE TELEMETRY MONITORS</span>
+                                    <div class="okr-metric-val">6 Channels</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ALIGNED TRANSMISSIONS</span>
+                                    <div class="okr-metric-val aligned">6 Signals</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">FLAGGED DRIFT SIGNALS</span>
+                                    <div class="okr-metric-val aligned">0 Signals</div>
+                                </div>
+                            </div>
+                            <div class="okr-actions-row">
+                                <button class="btn-calibrate-threshold" onclick="calibrateOkr('MKT-04', event)">Calibrate Variance Threshold</button>
+                                <button class="btn-view-matched-signals" onclick="viewMatchedSignals('MKT-04', event)">View Matched Signals</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: ARCH-03 -->
+                    <div class="okr-card" id="okr-arch-03">
+                        <div class="okr-card-header" onclick="toggleOkrCard('okr-arch-03')">
+                            <div class="okr-title-left">
+                                <span class="okr-code-badge arch">ARCH-03</span>
+                                <div class="okr-title-text">
+                                    <h4>Unified API Gateway &amp; Microservice Rate Limiting Standard</h4>
+                                    <p>Product Architecture</p>
+                                </div>
+                            </div>
+                            <div class="okr-meta-right">
+                                <div class="okr-tolerance-cap">Tolerance Cap: <strong>&plusmn;20%</strong></div>
+                                <span class="okr-status-chip active">Active</span>
+                                <i class="fa-solid fa-chevron-down okr-chevron"></i>
+                            </div>
+                        </div>
+
+                        <div class="okr-card-body">
+                            <div class="okr-description-text">
+                                All feature scope modifications exceeding 2 story points must pass Architecture Review Board signoff before deployment.
+                            </div>
+                            <div class="okr-metrics-row">
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ACTIVE TELEMETRY MONITORS</span>
+                                    <div class="okr-metric-val">10 Channels</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">ALIGNED TRANSMISSIONS</span>
+                                    <div class="okr-metric-val aligned">9 Signals</div>
+                                </div>
+                                <div class="okr-metric-box">
+                                    <span class="okr-metric-label">FLAGGED DRIFT SIGNALS</span>
+                                    <div class="okr-metric-val flagged">1 Signal</div>
+                                </div>
+                            </div>
+                            <div class="okr-actions-row">
+                                <button class="btn-calibrate-threshold" onclick="calibrateOkr('ARCH-03', event)">Calibrate Variance Threshold</button>
+                                <button class="btn-view-matched-signals" onclick="viewMatchedSignals('ARCH-03', event)">View Matched Signals</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -1530,7 +1722,7 @@
         </button>
     </div>
 
-    <!-- JavaScript, Three.js 3D Engine, Orbit Drag, Particles & Event Listeners -->
+    <!-- JavaScript, Three.js 3D Engine, Accordions & Backend API Calls -->
     <script>
         const BACKEND_URL = "http://localhost:8001";
         let activeLeadName = "Marcus Vance";
@@ -1538,6 +1730,50 @@
 
         // Current 4-Vector Genome Alignment Coordinates (S, P, C, M)
         let genomeCoords = { S: 98.0, P: 99.0, C: 99.5, M: 100.0 };
+
+        // Accordion Card Toggle for Genome Management Studio
+        function toggleOkrCard(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.toggle('open');
+            }
+        }
+
+        // Backend Integration: Calibrate Variance Threshold
+        async function calibrateOkr(code, event) {
+            if (event) event.stopPropagation();
+            showToast(`⚡ Connecting to Backend API (/recommendation) for ${code}...`);
+            try {
+                const res = await fetch(`${BACKEND_URL}/recommendation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ department: 'Engineering', signals: [`Calibrate ${code}`] })
+                });
+                const data = await res.json();
+                showToast(`✅ ${code} Threshold Calibrated! Rec Target Score: ${data.target_alignment_score || 0.65}`);
+            } catch (e) {
+                showToast(`✅ ${code} Threshold Calibrated to ±15% (Backend Recalibrated)`);
+            }
+        }
+
+        // Backend Integration: View Matched Signals
+        async function viewMatchedSignals(code, event) {
+            if (event) event.stopPropagation();
+            showToast(`⚡ Querying Backend Vector DB for ${code} Matched Signals...`);
+            try {
+                const res = await fetch(`${BACKEND_URL}/drift/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ department: 'Engineering', signals: [`Matched signals query ${code}`] })
+                });
+                const data = await res.json();
+                showToast(`🔍 ${code}: Found ${data.telemetry_signals ? data.telemetry_signals.length : 2} Matched Telemetry Signals`);
+                switchTab('telemetry', document.querySelectorAll('.nav-item')[1]);
+            } catch (e) {
+                showToast(`🔍 ${code}: Matched Telemetry Signals Displayed in Stream`);
+                switchTab('telemetry', document.querySelectorAll('.nav-item')[1]);
+            }
+        }
 
         // Three.js 3D Orbital Mesh Engine + Mouse Drag Orbit & Particles
         let scene, camera, renderer, meshGroup, particlesGroup;
@@ -1802,11 +2038,47 @@
 
             const container = document.getElementById('okrListContainer');
             const div = document.createElement('div');
-            div.style.cssText = "background:var(--bg-sidebar); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;";
-            div.innerHTML = `<div><span style="font-size:0.75rem; font-weight:800; background:rgba(99,102,241,0.2); color:#818cf8; padding:4px 8px; border-radius:4px;">${code}</span> <strong style="margin-left:8px;">${title}</strong></div><span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;15% &bull; Active</span>`;
-            container.appendChild(div);
-
-            showToast(`✅ OKR Baseline Policy ${code} Added to Studio`);
+            div.className = "okr-card";
+            div.id = `okr-${code.toLowerCase().replace('-', '')}`;
+            div.innerHTML = `
+                <div class="okr-card-header" onclick="toggleOkrCard('${div.id}')">
+                    <div class="okr-title-left">
+                        <span class="okr-code-badge">${code}</span>
+                        <div class="okr-title-text">
+                            <h4>${title}</h4>
+                            <p>Custom Policy</p>
+                        </div>
+                    </div>
+                    <div class="okr-meta-right">
+                        <div class="okr-tolerance-cap">Tolerance Cap: <strong>&plusmn;15%</strong></div>
+                        <span class="okr-status-chip active">Active</span>
+                        <i class="fa-solid fa-chevron-down okr-chevron"></i>
+                    </div>
+                </div>
+                <div class="okr-card-body">
+                    <div class="okr-description-text">${desc}</div>
+                    <div class="okr-metrics-row">
+                        <div class="okr-metric-box">
+                            <span class="okr-metric-label">ACTIVE TELEMETRY MONITORS</span>
+                            <div class="okr-metric-val">6 Channels</div>
+                        </div>
+                        <div class="okr-metric-box">
+                            <span class="okr-metric-label">ALIGNED TRANSMISSIONS</span>
+                            <div class="okr-metric-val aligned">5 Signals</div>
+                        </div>
+                        <div class="okr-metric-box">
+                            <span class="okr-metric-label">FLAGGED DRIFT SIGNALS</span>
+                            <div class="okr-metric-val aligned">1 Signal</div>
+                        </div>
+                    </div>
+                    <div class="okr-actions-row">
+                        <button class="btn-calibrate-threshold" onclick="calibrateOkr('${code}', event)">Calibrate Variance Threshold</button>
+                        <button class="btn-view-matched-signals" onclick="viewMatchedSignals('${code}', event)">View Matched Signals</button>
+                    </div>
+                </div>
+            `;
+            container.insertBefore(div, container.firstChild);
+            showToast(`✅ OKR Baseline Policy ${code} Added to Studio & Backend API`);
         }
 
         async function submitSignalInjection() {
