@@ -29,7 +29,7 @@
             --text-muted: #64748b;
             
             --accent-purple: #6366f1;
-            --accent-purple-glow: rgba(99, 102, 241, 0.3);
+            --accent-purple-glow: rgba(99, 102, 241, 0.35);
             --accent-green: #10b981;
             --accent-green-bg: rgba(16, 185, 129, 0.12);
             --accent-red: #ef4444;
@@ -55,7 +55,7 @@
             overflow-x: hidden;
         }
 
-        /* Centered Global Toast Notification */
+        /* Top-Center Toast Notification */
         .toast-container {
             position: fixed;
             top: 24px;
@@ -137,11 +137,7 @@
             font-weight: 600;
         }
 
-        .logo-sub {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .logo-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
 
         .workspace-badge {
             background: var(--bg-card);
@@ -153,7 +149,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-
             margin-left: 24px;
         }
 
@@ -166,11 +161,7 @@
             border-radius: 4px;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        .header-right { display: flex; align-items: center; gap: 16px; }
 
         .ingest-counter {
             font-size: 0.85rem;
@@ -188,6 +179,12 @@
             border-radius: 50%;
             box-shadow: 0 0 10px var(--accent-green);
             animation: pulse-green 1.5s infinite;
+        }
+
+        .live-pulse.paused {
+            background-color: var(--accent-amber);
+            box-shadow: none;
+            animation: none;
         }
 
         @keyframes pulse-green {
@@ -217,12 +214,9 @@
         }
 
         /* App Layout */
-        .app-layout {
-            display: flex;
-            flex: 1;
-        }
+        .app-layout { display: flex; flex: 1; }
 
-        /* Sidebar */
+        /* Sidebar Navigation */
         .sidebar {
             width: 250px;
             background: var(--bg-sidebar);
@@ -233,11 +227,7 @@
             justify-content: space-between;
         }
 
-        .nav-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .nav-section { display: flex; flex-direction: column; gap: 16px; }
 
         .stream-controls {
             background: var(--bg-card);
@@ -251,22 +241,27 @@
 
         .stream-status {
             font-size: 0.775rem;
-            color: var(--accent-amber);
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
+        .stream-status.active { color: var(--accent-green); }
+        .stream-status.paused { color: var(--accent-amber); }
+
         .btn-resume {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
             font-size: 0.725rem;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
         }
+
+        .btn-resume:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
         .nav-title {
             font-size: 0.7rem;
@@ -276,11 +271,7 @@
             text-transform: uppercase;
         }
 
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+        .nav-menu { display: flex; flex-direction: column; gap: 4px; }
 
         .nav-item {
             display: flex;
@@ -296,21 +287,15 @@
             transition: all 0.2s;
         }
 
-        .nav-item:hover, .nav-item.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
+        .nav-item:hover { background: var(--bg-card); color: var(--text-primary); }
 
         .nav-item.active {
             border-left: 3px solid var(--accent-purple);
             background: var(--bg-card-hover);
+            color: #fff;
         }
 
-        .nav-item-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .nav-item-left { display: flex; align-items: center; gap: 10px; }
 
         .nav-badge {
             font-size: 0.675rem;
@@ -320,6 +305,7 @@
         }
 
         .nav-badge.paused { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+        .nav-badge.active { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
         .nav-badge.okrs { background: rgba(99, 102, 241, 0.2); color: var(--accent-purple); }
         .nav-badge.alert { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
 
@@ -368,7 +354,7 @@
         .user-info h5 { font-size: 0.8rem; color: var(--text-primary); }
         .user-info p { font-size: 0.7rem; color: var(--text-muted); }
 
-        /* Main Dashboard Content */
+        /* Main Content SPA View Container */
         .main-content {
             flex: 1;
             padding: 32px;
@@ -378,28 +364,16 @@
             max-width: 1500px;
         }
 
-        .page-header h2 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
-        }
+        .tab-view { display: none; flex-direction: column; gap: 24px; }
+        .tab-view.active { display: flex; }
 
-        .page-header p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
+        .page-header { display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .page-header p { font-size: 0.875rem; color: var(--text-muted); }
 
         /* Top 4 KPI Cards Grid */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 1200px) {
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 
         .kpi-card {
             background: var(--bg-card);
@@ -411,87 +385,24 @@
             gap: 12px;
         }
 
-        .kpi-header {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .kpi-body {
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-        }
-
-        .kpi-val {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .kpi-chip {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
-        }
-
+        .kpi-header { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+        .kpi-body { display: flex; align-items: baseline; gap: 10px; }
+        .kpi-val { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+        .kpi-chip { font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
         .kpi-chip.green { background: var(--accent-green-bg); color: var(--accent-green); }
         .kpi-chip.red { background: var(--accent-red-bg); color: var(--accent-red); }
+        .kpi-footer { font-size: 0.75rem; color: var(--text-muted); }
 
-        .kpi-footer {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        .progress-bar-bg { height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { height: 100%; background: var(--accent-purple); border-radius: 2px; }
 
-        .progress-bar-bg {
-            height: 4px;
-            background: #1e293b;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
+        /* Department Matrix Grid */
+        .matrix-header { display: flex; justify-content: space-between; align-items: center; }
+        .matrix-header h3 { font-size: 1.1rem; font-weight: 700; }
+        .matrix-sub { font-size: 0.8rem; color: var(--text-muted); }
 
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--accent-purple);
-            border-radius: 2px;
-        }
-
-        /* Department Matrix Section */
-        .matrix-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .matrix-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .matrix-header h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .matrix-sub {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .dept-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 1200px) {
-            .dept-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        .dept-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1200px) { .dept-grid { grid-template-columns: repeat(2, 1fr); } }
 
         .dept-card {
             background: var(--bg-card);
@@ -504,23 +415,10 @@
             transition: all 0.2s;
         }
 
-        .dept-card:hover {
-            border-color: var(--border-highlight);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+        .dept-card:hover { border-color: var(--border-highlight); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
-        .dept-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .dept-info {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
+        .dept-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .dept-info { display: flex; gap: 12px; align-items: center; }
         .dept-avatar {
             width: 36px;
             height: 36px;
@@ -534,62 +432,23 @@
             font-weight: 800;
         }
 
-        .dept-name {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .dept-lead {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .dept-status {
-            font-size: 0.7rem;
-            font-weight: 800;
-            padding: 4px 8px;
-            border-radius: 6px;
-            letter-spacing: 0.5px;
-        }
+        .dept-name { font-size: 1rem; font-weight: 700; }
+        .dept-lead { font-size: 0.75rem; color: var(--text-muted); }
+        .dept-status { font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; letter-spacing: 0.5px; }
 
         .dept-status.severe { background: var(--accent-red-bg); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
         .dept-status.moderate { background: var(--accent-amber-bg); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.3); }
         .dept-status.aligned { background: var(--accent-green-bg); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
 
-        .drift-index-box {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .drift-index-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .drift-val {
-            font-size: 1.25rem;
-            font-weight: 800;
-        }
-
+        .drift-index-box { display: flex; flex-direction: column; gap: 6px; }
+        .drift-index-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
+        .drift-val { font-size: 1.25rem; font-weight: 800; }
         .drift-val.severe { color: var(--accent-red); }
         .drift-val.moderate { color: var(--accent-amber); }
         .drift-val.aligned { color: var(--accent-green); }
 
-        .drift-bar-bg {
-            height: 6px;
-            background: #1e293b;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .drift-bar-fill {
-            height: 100%;
-            border-radius: 3px;
-        }
-
+        .drift-bar-bg { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+        .drift-bar-fill { height: 100%; border-radius: 3px; }
         .drift-bar-fill.severe { background: var(--accent-red); }
         .drift-bar-fill.moderate { background: var(--accent-amber); }
         .drift-bar-fill.aligned { background: var(--accent-green); }
@@ -604,30 +463,11 @@
             gap: 4px;
         }
 
-        .subtopic-title {
-            font-size: 0.675rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
+        .subtopic-title { font-size: 0.675rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .subtopic-text { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
 
-        .subtopic-text {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .dept-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 8px;
-        }
-
-        .dept-meta {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        .dept-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; }
+        .dept-meta { font-size: 0.75rem; color: var(--text-muted); }
 
         .btn-inspect {
             background: rgba(99, 102, 241, 0.15);
@@ -641,10 +481,7 @@
             transition: all 0.2s;
         }
 
-        .btn-inspect:hover {
-            background: var(--accent-purple);
-            color: #fff;
-        }
+        .btn-inspect:hover { background: var(--accent-purple); color: #fff; }
 
         /* Slide-Over Drawer Modal */
         .drawer-overlay {
@@ -661,16 +498,13 @@
             transition: opacity 0.3s;
         }
 
-        .drawer-overlay.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .drawer-overlay.open { opacity: 1; pointer-events: auto; }
 
         .drawer {
             position: fixed;
             top: 0;
-            right: -520px;
-            width: 500px;
+            right: -540px;
+            width: 520px;
             height: 100vh;
             background: var(--bg-sidebar);
             border-left: 1px solid var(--border-color);
@@ -678,46 +512,20 @@
             padding: 32px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
             overflow-y: auto;
             transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: -10px 0 40px rgba(0,0,0,0.5);
         }
 
-        .drawer.open {
-            right: 0;
-        }
+        .drawer.open { right: 0; }
 
-        .drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; }
+        .drawer-title-box { display: flex; align-items: center; gap: 12px; }
+        .drawer-title-box h3 { font-size: 1.25rem; font-weight: 800; }
+        .drawer-close { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
 
-        .drawer-title-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .drawer-title-box h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-        }
-
-        .drawer-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .drawer-metrics-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
+        .drawer-metrics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
         .drawer-metric-card {
             background: var(--bg-card);
@@ -726,20 +534,10 @@
             border-radius: 12px;
         }
 
-        .drawer-metric-card span {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
+        .drawer-metric-card span { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .drawer-metric-card h4 { font-size: 1.6rem; font-weight: 800; margin-top: 4px; }
 
-        .drawer-metric-card h4 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin-top: 4px;
-        }
-
-        /* Active Strategic Variance Warning Box */
+        /* Active Strategic Variance Box */
         .variance-card {
             background: rgba(239, 68, 68, 0.05);
             border: 1px solid rgba(239, 68, 68, 0.25);
@@ -747,31 +545,12 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
-        .variance-header {
-            color: var(--accent-red);
-            font-size: 0.825rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .variance-section {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .variance-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
+        .variance-header { color: var(--accent-red); font-size: 0.825rem; font-weight: 800; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px; }
+        .variance-section { display: flex; flex-direction: column; gap: 6px; }
+        .variance-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
         .telemetry-raw-box {
             background: #090b11;
@@ -794,17 +573,8 @@
             gap: 4px;
         }
 
-        .policy-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #818cf8;
-        }
-
-        .policy-desc {
-            font-size: 0.775rem;
-            color: #94a3b8;
-            line-height: 1.4;
-        }
+        .policy-title { font-size: 0.85rem; font-weight: 700; color: #818cf8; }
+        .policy-desc { font-size: 0.775rem; color: #94a3b8; line-height: 1.4; }
 
         .btn-slack-nudge {
             background: var(--accent-green);
@@ -823,11 +593,7 @@
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
 
-        .btn-slack-nudge:hover {
-            background: #059669;
-            color: #fff;
-            transform: translateY(-2px);
-        }
+        .btn-slack-nudge:hover { background: #059669; color: #fff; transform: translateY(-2px); }
 
         .chart-box {
             background: var(--bg-card);
@@ -839,13 +605,83 @@
             gap: 12px;
         }
 
-        .chart-header {
+        .chart-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; }
+
+        /* Primary Behavioral Drift Topic & Flagged Telemetry Section (Screenshot #1) */
+        .behavioral-topic-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .behavioral-topic-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--accent-amber);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .behavioral-topic-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .flagged-telemetry-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .flagged-telemetry-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 700;
         }
+
+        .telemetry-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .telemetry-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .source-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #1e293b;
+            color: #818cf8;
+        }
+
+        .source-tag.confluence { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .source-tag.slack { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+
+        .time-tag { font-size: 0.75rem; color: var(--text-muted); }
+        .drift-tag { font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
+        .drift-tag.red { background: var(--accent-red-bg); color: var(--accent-red); }
+        .drift-tag.amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
+
+        .telemetry-card-text { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); line-height: 1.4; }
+        .telemetry-card-matched { font-size: 0.725rem; color: var(--text-muted); }
+        .telemetry-card-matched strong { color: #818cf8; }
 
         .btn-trigger-intervention {
             background: var(--accent-purple);
@@ -861,12 +697,35 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.2s;
+            box-shadow: 0 4px 15px var(--accent-purple-glow);
         }
 
-        .btn-trigger-intervention:hover {
-            background: #4f46e5;
-            box-shadow: 0 4px 20px var(--accent-purple-glow);
+        .btn-trigger-intervention:hover { background: #4f46e5; }
+
+        /* Shared Tables for Stream, OKRs, & Interventions Views */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        th { background: rgba(255, 255, 255, 0.03); color: var(--text-muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
+        td { padding: 12px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: var(--text-primary); }
+        tr:hover td { background: var(--bg-card-hover); }
+
+        .expanded-row td { background: #0c0e17 !important; padding: 20px; }
+
+        .status-pill { padding: 3px 8px; border-radius: 6px; font-size: 0.725rem; font-weight: 700; }
+        .status-pill.delivered { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+        .status-pill.acknowledged { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+        .status-pill.escalated { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+        .status-pill.actioned { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
     </style>
 </head>
 <body>
@@ -882,16 +741,11 @@
     <!-- Top Header -->
     <header class="header">
         <div class="header-left">
-            <div class="logo-box">
-                <i class="fa-solid fa-dna"></i>
-            </div>
+            <div class="logo-box"><i class="fa-solid fa-dna"></i></div>
             <div>
-                <div class="logo-title">
-                    HELIX <span class="logo-tag">v2.4</span>
-                </div>
+                <div class="logo-title">HELIX <span class="logo-tag">v2.4</span></div>
                 <div class="logo-sub">Cognitive Genome Platform</div>
             </div>
-
             <div class="workspace-badge">
                 <span>Workspace: <strong>Global Enterprise Genome</strong></span>
                 <span class="sync-active-chip">Sync Active</span>
@@ -900,7 +754,7 @@
 
         <div class="header-right">
             <div class="ingest-counter">
-                <div class="live-pulse"></div>
+                <div class="live-pulse" id="headerPulse"></div>
                 Telemetry Ingest: <strong id="ingestCounter">1,390</strong> events/min
             </div>
             <button class="btn-quick-inject" onclick="showToast('⚡ Quick Signal Injected into Stream')">
@@ -912,31 +766,31 @@
     <!-- Main Layout -->
     <div class="app-layout">
 
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="nav-section">
                 <div class="stream-controls">
-                    <div class="stream-status">
-                        <i class="fa-solid fa-circle-dot" style="font-size: 0.5rem;"></i> Stream Paused
+                    <div class="stream-status paused" id="sidebarStreamStatus">
+                        <i class="fa-solid fa-circle-dot" style="font-size: 0.5rem;"></i> <span id="streamStatusText">Stream Paused</span>
                     </div>
-                    <button class="btn-resume">Resume</button>
+                    <button class="btn-resume" id="btnToggleStream" onclick="toggleStream()">Resume</button>
                 </div>
 
                 <div class="nav-title">Navigation</div>
 
                 <nav class="nav-menu">
-                    <a class="nav-item active">
+                    <a class="nav-item active" onclick="switchTab('heatmap', this)">
                         <div class="nav-item-left"><i class="fa-solid fa-border-all"></i> Executive Heatmap</div>
                     </a>
-                    <a class="nav-item">
+                    <a class="nav-item" onclick="switchTab('telemetry', this)">
                         <div class="nav-item-left"><i class="fa-solid fa-chart-line"></i> Live Telemetry Stream</div>
-                        <span class="nav-badge paused">PAUSED</span>
+                        <span class="nav-badge paused" id="badgeTelemetry">PAUSED</span>
                     </a>
-                    <a class="nav-item">
+                    <a class="nav-item" onclick="switchTab('genome', this)">
                         <div class="nav-item-left"><i class="fa-solid fa-dna"></i> Genome Management</div>
                         <span class="nav-badge okrs">5 OKRs</span>
                     </a>
-                    <a class="nav-item">
+                    <a class="nav-item" onclick="switchTab('interventions', this)">
                         <div class="nav-item-left"><i class="fa-solid fa-bell"></i> Nudge &amp; Interventions</div>
                         <span class="nav-badge alert">1 Alert</span>
                     </a>
@@ -958,231 +812,384 @@
             </div>
         </aside>
 
-        <!-- Main Content View -->
+        <!-- Main Content Views (SPA Tabs) -->
         <main class="main-content">
-            <div class="page-header">
-                <h2>Executive Drift Heatmap</h2>
-                <p>Real-time cognitive drift monitoring across enterprise business units</p>
-            </div>
-
-            <!-- Top KPI Row -->
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-header">Organizational Cohesion</div>
-                    <div class="kpi-body">
-                        <div class="kpi-val">85.4%</div>
-                        <span class="kpi-chip green">↑ +2.1%</span>
-                    </div>
-                    <div class="kpi-footer">Weighted cross-departmental alignment score</div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-header">Active Drift Alerts</div>
-                    <div class="kpi-body">
-                        <div class="kpi-val">14 Alerts</div>
-                        <span class="kpi-chip red">1 Critical</span>
-                    </div>
-                    <div class="kpi-footer">1 critical severe drift flags</div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-header">Highest Risk Unit</div>
-                    <div class="kpi-body">
-                        <div class="kpi-val">Engineering</div>
-                        <span class="kpi-chip red">High Risk</span>
-                    </div>
-                    <div class="kpi-footer">Current Drift Score: 0.68</div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-header">24H Intervention Success</div>
-                    <div class="kpi-body">
-                        <div class="kpi-val">91.2%</div>
-                        <span class="kpi-chip green">Optimal</span>
-                    </div>
-                    <div class="kpi-footer">
-                        41 of 45 automated nudges actioned
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 91.2%;"></div></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Departmental Behavioral Drift Matrix -->
-            <div class="matrix-section">
-                <div class="matrix-header">
+            
+            <!-- VIEW 1: EXECUTIVE HEATMAP -->
+            <div class="tab-view active" id="view-heatmap">
+                <div class="page-header">
                     <div>
-                        <h3>Departmental Behavioral Drift Matrix</h3>
+                        <h2>Executive Drift Heatmap</h2>
+                        <p>Real-time cognitive drift monitoring across enterprise business units</p>
                     </div>
-                    <div class="matrix-sub">Click "Inspect" on any tile for deep telemetry trajectory</div>
                 </div>
 
-                <div class="dept-grid">
-                    <!-- Engineering -->
-                    <div class="dept-card">
-                        <div class="dept-header">
-                            <div class="dept-info">
-                                <div class="dept-avatar">ENG</div>
-                                <div>
-                                    <div class="dept-name">Engineering</div>
-                                    <div class="dept-lead">Lead: Marcus Vance (VP Eng)</div>
-                                </div>
-                            </div>
-                            <span class="dept-status severe">SEVERE DRIFT</span>
-                        </div>
-
-                        <div class="drift-index-box">
-                            <div class="drift-index-label">
-                                <span>Current Drift Index</span>
-                                <span class="drift-val severe">0.68 <span style="font-size:0.75rem; font-weight:500;">(68%)</span></span>
-                            </div>
-                            <div class="drift-bar-bg"><div class="drift-bar-fill severe" style="width: 68%;"></div></div>
-                        </div>
-
-                        <div class="subtopic-box">
-                            <div class="subtopic-title">Top Drifting Sub-Topic</div>
-                            <div class="subtopic-text">"Bypassing SOC2 Security Audit to Hit Release Target"</div>
-                        </div>
-
-                        <div class="dept-footer">
-                            <span class="dept-meta">6 alerts &bull; 72.4% cohesion</span>
-                            <button class="btn-inspect" onclick="openDrawer('Engineering', 'Marcus Vance (VP Eng)', '0.68', '72.4%', 'Ticket ENG-4892 marked as \"RESOLVED/DEPLOYED\". Comment from @m.vance: \"Waiving the SecOps code review for sprint release deadline. We will patch vulnerability in hotfix release next week.\"', 'SEC-01: Mandatory SOC2 & Pre-Release SecOps Gateways', 'Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.')">Inspect &gt;</button>
+                <!-- Top KPI Row -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">Organizational Cohesion</div>
+                        <div class="kpi-body"><div class="kpi-val">85.4%</div><span class="kpi-chip green">↑ +2.1%</span></div>
+                        <div class="kpi-footer">Weighted cross-departmental alignment score</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">Active Drift Alerts</div>
+                        <div class="kpi-body"><div class="kpi-val">14 Alerts</div><span class="kpi-chip red">1 Critical</span></div>
+                        <div class="kpi-footer">1 critical severe drift flags</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">Highest Risk Unit</div>
+                        <div class="kpi-body"><div class="kpi-val">Engineering</div><span class="kpi-chip red">High Risk</span></div>
+                        <div class="kpi-footer">Current Drift Score: 0.68</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">24H Intervention Success</div>
+                        <div class="kpi-body"><div class="kpi-val">91.2%</div><span class="kpi-chip green">Optimal</span></div>
+                        <div class="kpi-footer">
+                            41 of 45 automated nudges actioned
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 91.2%;"></div></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Product -->
-                    <div class="dept-card">
-                        <div class="dept-header">
-                            <div class="dept-info">
-                                <div class="dept-avatar" style="color: #f59e0b;">PRD</div>
-                                <div>
-                                    <div class="dept-name">Product</div>
-                                    <div class="dept-lead">Lead: Elena Rostova (Head of Product)</div>
-                                </div>
-                            </div>
-                            <span class="dept-status moderate">MODERATE DRIFT</span>
-                        </div>
-
-                        <div class="drift-index-box">
-                            <div class="drift-index-label">
-                                <span>Current Drift Index</span>
-                                <span class="drift-val moderate">0.38 <span style="font-size:0.75rem; font-weight:500;">(38%)</span></span>
-                            </div>
-                            <div class="drift-bar-bg"><div class="drift-bar-fill moderate" style="width: 38%;"></div></div>
-                        </div>
-
-                        <div class="subtopic-box">
-                            <div class="subtopic-title">Top Drifting Sub-Topic</div>
-                            <div class="subtopic-text">"Unapproved Feature Scope Creep without Architecture Signoff"</div>
-                        </div>
-
-                        <div class="dept-footer">
-                            <span class="dept-meta">3 alerts &bull; 84.1% cohesion</span>
-                            <button class="btn-inspect" onclick="openDrawer('Product', 'Elena Rostova (Head of Product)', '0.38', '84.1%', 'PRD-102: Added unapproved real-time analytics module without review by Lead Software Architect.', 'PRD-04: Mandatory Architecture Review for Feature Additions', 'All feature scope modifications exceeding 2 story points must pass Architecture Review Board signoff.')">Inspect &gt;</button>
-                        </div>
+                <!-- Departmental Behavioral Drift Matrix -->
+                <div class="matrix-section">
+                    <div class="matrix-header">
+                        <h3>Departmental Behavioral Drift Matrix</h3>
+                        <div class="matrix-sub">Click "Inspect" on any tile for deep telemetry trajectory</div>
                     </div>
 
-                    <!-- Legal & Risk -->
-                    <div class="dept-card">
-                        <div class="dept-header">
-                            <div class="dept-info">
-                                <div class="dept-avatar" style="color: #f59e0b;">LGL</div>
-                                <div>
-                                    <div class="dept-name">Legal &amp; Risk</div>
-                                    <div class="dept-lead">Lead: David Chen (Chief Legal Officer)</div>
+                    <div class="dept-grid">
+                        <!-- Engineering -->
+                        <div class="dept-card">
+                            <div class="dept-header">
+                                <div class="dept-info">
+                                    <div class="dept-avatar">ENG</div>
+                                    <div>
+                                        <div class="dept-name">Engineering</div>
+                                        <div class="dept-lead">Lead: Marcus Vance (VP Eng)</div>
+                                    </div>
                                 </div>
+                                <span class="dept-status severe">SEVERE DRIFT</span>
                             </div>
-                            <span class="dept-status moderate">MODERATE DRIFT</span>
-                        </div>
-
-                        <div class="drift-index-box">
-                            <div class="drift-index-label">
-                                <span>Current Drift Index</span>
-                                <span class="drift-val moderate">0.45 <span style="font-size:0.75rem; font-weight:500;">(45%)</span></span>
+                            <div class="drift-index-box">
+                                <div class="drift-index-label"><span>Current Drift Index</span><span class="drift-val severe">0.68 (68%)</span></div>
+                                <div class="drift-bar-bg"><div class="drift-bar-fill severe" style="width: 68%;"></div></div>
                             </div>
-                            <div class="drift-bar-bg"><div class="drift-bar-fill moderate" style="width: 45%;"></div></div>
+                            <div class="subtopic-box">
+                                <div class="subtopic-title">Top Drifting Sub-Topic</div>
+                                <div class="subtopic-text">"Bypassing SOC2 Security Audit to Hit Release Target"</div>
+                            </div>
+                            <div class="dept-footer">
+                                <span class="dept-meta">6 alerts &bull; 72.4% cohesion</span>
+                                <button class="btn-inspect" onclick="openDrawer('Engineering', 'Marcus Vance (VP Eng)', '0.68', '72.4%', 'Ticket ENG-4892 marked as \"RESOLVED/DEPLOYED\". Comment from @m.vance: \"Waiving the SecOps code review for sprint release deadline. We will patch vulnerability in hotfix release next week.\"', 'SEC-01: Mandatory SOC2 & Pre-Release SecOps Gateways', 'Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.', 'Bypassing SOC2 Security Audit to Hit Release Target')">Inspect &gt;</button>
+                            </div>
                         </div>
 
-                        <div class="subtopic-box">
-                            <div class="subtopic-title">Top Drifting Sub-Topic</div>
-                            <div class="subtopic-text">"Custom IP Indemnity Clause Amendments in Enterprise MSAs"</div>
-                        </div>
-
-                        <div class="dept-footer">
-                            <span class="dept-meta">4 alerts &bull; 81% cohesion</span>
-                            <button class="btn-inspect" onclick="openDrawer('Legal & Risk', 'David Chen (CLO)', '0.45', '81.0%', 'MSA-701: Custom liability cap inserted into contract without General Counsel signoff.', 'LGL-02: Standard IP Indemnity & Liability Cap Protections', 'Any alteration to standard limitation of liability clauses requires explicit General Counsel approval.')">Inspect &gt;</button>
-                        </div>
-                    </div>
-
-                    <!-- Sales & Revenue -->
-                    <div class="dept-card">
-                        <div class="dept-header">
-                            <div class="dept-info">
-                                <div class="dept-avatar" style="color: #10b981;">SLS</div>
-                                <div>
-                                    <div class="dept-name">Sales &amp; Revenue</div>
-                                    <div class="dept-lead">Lead: Sarah Jenkins (CRO)</div>
+                        <!-- Product -->
+                        <div class="dept-card">
+                            <div class="dept-header">
+                                <div class="dept-info">
+                                    <div class="dept-avatar" style="color: #f59e0b;">PRD</div>
+                                    <div>
+                                        <div class="dept-name">Product</div>
+                                        <div class="dept-lead">Lead: Elena Rostova (Head of Product)</div>
+                                    </div>
                                 </div>
+                                <span class="dept-status moderate">MODERATE DRIFT</span>
                             </div>
-                            <span class="dept-status aligned">ALIGNED</span>
-                        </div>
-
-                        <div class="drift-index-box">
-                            <div class="drift-index-label">
-                                <span>Current Drift Index</span>
-                                <span class="drift-val aligned">0.25 <span style="font-size:0.75rem; font-weight:500;">(25%)</span></span>
+                            <div class="drift-index-box">
+                                <div class="drift-index-label"><span>Current Drift Index</span><span class="drift-val moderate">0.38 (38%)</span></div>
+                                <div class="drift-bar-bg"><div class="drift-bar-fill moderate" style="width: 38%;"></div></div>
                             </div>
-                            <div class="drift-bar-bg"><div class="drift-bar-fill aligned" style="width: 25%;"></div></div>
+                            <div class="subtopic-box">
+                                <div class="subtopic-title">Top Drifting Sub-Topic</div>
+                                <div class="subtopic-text">"Unapproved Feature Scope Creep without Architecture Signoff"</div>
+                            </div>
+                            <div class="dept-footer">
+                                <span class="dept-meta">3 alerts &bull; 84.1% cohesion</span>
+                                <button class="btn-inspect" onclick="openDrawer('Product', 'Elena Rostova (Head of Product)', '0.38', '84.1%', 'PRD-102: Added unapproved real-time analytics module without review by Lead Software Architect.', 'ARCH-03: Unified API Gateway & Microservice Standard', 'All feature scope modifications exceeding 2 story points must pass Architecture Review Board signoff.', 'Unapproved Feature Scope Creep without Architecture Signoff')">Inspect &gt;</button>
+                            </div>
                         </div>
 
-                        <div class="subtopic-box">
-                            <div class="subtopic-title">Top Drifting Sub-Topic</div>
-                            <div class="subtopic-text">"Custom Enterprise Discount Negotiations"</div>
-                        </div>
-
-                        <div class="dept-footer">
-                            <span class="dept-meta">1 alert &bull; 92% cohesion</span>
-                            <button class="btn-inspect" onclick="openDrawer('Sales & Revenue', 'Sarah Jenkins (CRO)', '0.25', '92.0%', 'SLS-402: Offered 28% multi-year discount to strategic partner.', 'POL-PRICE-04: Sales Pricing & Discount Approval Thresholds', 'Discounts exceeding 30% require VP Sales signoff.')">Inspect &gt;</button>
-                        </div>
-                    </div>
-
-                    <!-- Global Marketing -->
-                    <div class="dept-card">
-                        <div class="dept-header">
-                            <div class="dept-info">
-                                <div class="dept-avatar" style="color: #10b981;">MKT</div>
-                                <div>
-                                    <div class="dept-name">Global Marketing</div>
-                                    <div class="dept-lead">Lead: Amara Okafor (CMO)</div>
+                        <!-- Legal & Risk -->
+                        <div class="dept-card">
+                            <div class="dept-header">
+                                <div class="dept-info">
+                                    <div class="dept-avatar" style="color: #f59e0b;">LGL</div>
+                                    <div>
+                                        <div class="dept-name">Legal &amp; Risk</div>
+                                        <div class="dept-lead">Lead: David Chen (Chief Legal Officer)</div>
+                                    </div>
                                 </div>
+                                <span class="dept-status moderate">MODERATE DRIFT</span>
                             </div>
-                            <span class="dept-status aligned">ALIGNED</span>
-                        </div>
-
-                        <div class="drift-index-box">
-                            <div class="drift-index-label">
-                                <span>Current Drift Index</span>
-                                <span class="drift-val aligned">0.12 <span style="font-size:0.75rem; font-weight:500;">(12%)</span></span>
+                            <div class="drift-index-box">
+                                <div class="drift-index-label"><span>Current Drift Index</span><span class="drift-val moderate">0.45 (45%)</span></div>
+                                <div class="drift-bar-bg"><div class="drift-bar-fill moderate" style="width: 45%;"></div></div>
                             </div>
-                            <div class="drift-bar-bg"><div class="drift-bar-fill aligned" style="width: 12%;"></div></div>
+                            <div class="subtopic-box">
+                                <div class="subtopic-title">Top Drifting Sub-Topic</div>
+                                <div class="subtopic-text">"Custom IP Indemnity Clause Amendments in Enterprise MSAs"</div>
+                            </div>
+                            <div class="dept-footer">
+                                <span class="dept-meta">4 alerts &bull; 81% cohesion</span>
+                                <button class="btn-inspect" onclick="openDrawer('Legal & Risk', 'David Chen (CLO)', '0.45', '81.0%', 'Confluence Page \"Standard MSA Template v4.2\" revised by @d.chen: \"Added clause 14.b waiving standard liability capping in favor of unlimited mutual indemnity for data loss.\"', 'LEG-01: Enterprise Liability Capping & IP Indemnity Baseline', 'Any alteration to standard limitation of liability clauses requires explicit General Counsel approval.', 'Custom IP Indemnity Clause Amendments in Enterprise MSAs')">Inspect &gt;</button>
+                            </div>
                         </div>
 
-                        <div class="subtopic-box">
-                            <div class="subtopic-title">Top Drifting Sub-Topic</div>
-                            <div class="subtopic-text">"Brand Identity Guidelines"</div>
+                        <!-- Sales & Revenue -->
+                        <div class="dept-card">
+                            <div class="dept-header">
+                                <div class="dept-info">
+                                    <div class="dept-avatar" style="color: #10b981;">SLS</div>
+                                    <div>
+                                        <div class="dept-name">Sales &amp; Revenue</div>
+                                        <div class="dept-lead">Lead: Sarah Jenkins (CRO)</div>
+                                    </div>
+                                </div>
+                                <span class="dept-status aligned">ALIGNED</span>
+                            </div>
+                            <div class="drift-index-box">
+                                <div class="drift-index-label"><span>Current Drift Index</span><span class="drift-val aligned">0.25 (25%)</span></div>
+                                <div class="drift-bar-bg"><div class="drift-bar-fill aligned" style="width: 25%;"></div></div>
+                            </div>
+                            <div class="subtopic-box">
+                                <div class="subtopic-title">Top Drifting Sub-Topic</div>
+                                <div class="subtopic-text">"Custom Enterprise Discount Negotiations"</div>
+                            </div>
+                            <div class="dept-footer">
+                                <span class="dept-meta">1 alert &bull; 92% cohesion</span>
+                                <button class="btn-inspect" onclick="openDrawer('Sales & Revenue', 'Sarah Jenkins (CRO)', '0.25', '92.0%', 'SLS-402: Offered 28% multi-year discount to strategic partner.', 'PRC-02: Commercial Pricing & Discounting Authorization Thresholds', 'Discounts exceeding 30% require VP Sales signoff.', 'Custom Enterprise Discount Negotiations')">Inspect &gt;</button>
+                            </div>
                         </div>
 
-                        <div class="dept-footer">
-                            <span class="dept-meta">0 alerts &bull; 96% cohesion</span>
-                            <button class="btn-inspect" onclick="openDrawer('Global Marketing', 'Amara Okafor (CMO)', '0.12', '96.0%', 'MKT-101: Updated landing page typography to Inter font family.', 'MKT-01: Brand Identity & Typography Guidelines', 'All public marketing collateral must adhere to brand design system tokens.')">Inspect &gt;</button>
+                        <!-- Global Marketing -->
+                        <div class="dept-card">
+                            <div class="dept-header">
+                                <div class="dept-info">
+                                    <div class="dept-avatar" style="color: #10b981;">MKT</div>
+                                    <div>
+                                        <div class="dept-name">Global Marketing</div>
+                                        <div class="dept-lead">Lead: Amara Okafor (CMO)</div>
+                                    </div>
+                                </div>
+                                <span class="dept-status aligned">ALIGNED</span>
+                            </div>
+                            <div class="drift-index-box">
+                                <div class="drift-index-label"><span>Current Drift Index</span><span class="drift-val aligned">0.12 (12%)</span></div>
+                                <div class="drift-bar-bg"><div class="drift-bar-fill aligned" style="width: 12%;"></div></div>
+                            </div>
+                            <div class="subtopic-box">
+                                <div class="subtopic-title">Top Drifting Sub-Topic</div>
+                                <div class="subtopic-text">"Brand Identity Guidelines"</div>
+                            </div>
+                            <div class="dept-footer">
+                                <span class="dept-meta">0 alerts &bull; 96% cohesion</span>
+                                <button class="btn-inspect" onclick="openDrawer('Global Marketing', 'Amara Okafor (CMO)', '0.12', '96.0%', 'MKT-101: Updated landing page typography to Inter font family.', 'MKT-04: Verifiable Product Claims & External Communication', 'All public marketing collateral must adhere to brand design system tokens.', 'Brand Identity Guidelines')">Inspect &gt;</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
 
+            <!-- VIEW 2: LIVE TELEMETRY STREAM -->
+            <div class="tab-view" id="view-telemetry">
+                <div class="page-header">
+                    <div>
+                        <h2><span class="live-pulse" style="display:inline-block; margin-right:8px;"></span> Live Telemetry Stream</h2>
+                        <p>Real-time ingestion feed &amp; divergence evaluation engine</p>
+                    </div>
+                    <button class="btn-quick-inject" onclick="showToast('⚡ Injecting Real-Time Telemetry Payload')"><i class="fa-solid fa-bolt"></i> Inject Telemetry Signal</button>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>TIMESTAMP</th>
+                                    <th>SOURCE</th>
+                                    <th>DEPARTMENT</th>
+                                    <th>PAYLOAD PREVIEW</th>
+                                    <th>MATCHED BASELINE</th>
+                                    <th>DRIFT SCORE</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>14:52:19</td>
+                                    <td><span class="source-tag">Jira</span></td>
+                                    <td>Engineering</td>
+                                    <td>ENG-4892: Closed ticket without SecOps mandatory security signoff...</td>
+                                    <td><span style="color:#818cf8;">Mandatory SOC2 &amp; Pre-Release...</span></td>
+                                    <td><span class="drift-tag red">0.88 (High)</span></td>
+                                    <td><button class="btn-inspect" onclick="toggleExpandRow(this)">Collapse</button></td>
+                                </tr>
+                                <tr class="expanded-row">
+                                    <td colspan="7">
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                                            <div>
+                                                <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">RAW MESSAGE PAYLOAD (JIRA #ENG-4892)</div>
+                                                <div class="telemetry-raw-box">Ticket ENG-4892 marked as "RESOLVED/DEPLOYED". Comment from @m.vance: "Waiving the SecOps code review for sprint release deadline. We will patch vulnerability in hotfix release next week."</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">MATCHED STRATEGIC POLICY BASELINE (Drift: 0.88)</div>
+                                                <div class="policy-violated-box">
+                                                    <div class="policy-title">Mandatory SOC2 &amp; Pre-Release SecOps Gateways</div>
+                                                    <div class="policy-desc">Engineering leadership explicitly bypassed mandatory pre-release security validation to preserve release velocity, violating policy SEC-01 which strictly forbids unreviewed production deployments.</div>
+                                                </div>
+                                                <button class="btn-slack-nudge" style="margin-top:12px; width:100%;" onclick="showToast('✅ Nudge Dispatched to Marcus Vance')">Dispatch Nudge Intervention</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>14:48:05</td>
+                                    <td><span class="source-tag slack">Slack</span></td>
+                                    <td>Sales</td>
+                                    <td>#deal-desk: Offering Enterprise Client Acme Corp 35% custom discount...</td>
+                                    <td><span>Commercial Pricing &amp; Discounting...</span></td>
+                                    <td><span class="drift-tag amber">0.48 (Med)</span></td>
+                                    <td><button class="btn-inspect">Detail</button></td>
+                                </tr>
+                                <tr>
+                                    <td>14:35:12</td>
+                                    <td><span class="source-tag confluence">Confluence</span></td>
+                                    <td>Legal &amp; Risk</td>
+                                    <td>MSA Spec Edit: Modified IP ownership indemnity clause for Tier-1 Customer...</td>
+                                    <td><span>Enterprise Liability Capping &amp; IP...</span></td>
+                                    <td><span class="drift-tag red">0.79 (High)</span></td>
+                                    <td><button class="btn-inspect">Detail</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: GENOME MANAGEMENT STUDIO -->
+            <div class="tab-view" id="view-genome">
+                <div class="page-header">
+                    <div>
+                        <h2>Genome Management Studio</h2>
+                        <p>Define, calibrate, and enforce enterprise strategic baselines &amp; OKR policies</p>
+                    </div>
+                    <button class="btn-quick-inject" onclick="showToast('⚡ Strategic Objective Added')"><i class="fa-solid fa-plus"></i> Add Strategic Objective</button>
+                </div>
+
+                <div class="table-card">
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:20px; border-radius:12px; display:flex; flex-direction:column; gap:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <span style="font-size:0.75rem; font-weight:800; background:rgba(99,102,241,0.2); color:#818cf8; padding:4px 8px; border-radius:4px;">SEC-01</span>
+                                    <h4 style="font-size:1rem; font-weight:700;">Mandatory SOC2 &amp; Pre-Release SecOps Gateways</h4>
+                                </div>
+                                <span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;15% &bull; Active</span>
+                            </div>
+                            <p style="font-size:0.825rem; color:var(--text-muted);">Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.</p>
+                            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:8px;">
+                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;"><span style="font-size:0.7rem; color:var(--text-muted);">ACTIVE TELEMETRY MONITORS</span><h5 style="font-size:1.1rem; font-weight:800;">14 Channels</h5></div>
+                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;"><span style="font-size:0.7rem; color:var(--text-muted);">ALIGNED TRANSMISSIONS</span><h5 style="font-size:1.1rem; font-weight:800; color:var(--accent-green);">9 Signals</h5></div>
+                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;"><span style="font-size:0.7rem; color:var(--text-muted);">FLAGGED DRIFT SIGNALS</span><h5 style="font-size:1.1rem; font-weight:800; color:var(--accent-red);">5 Signals</h5></div>
+                            </div>
+                        </div>
+
+                        <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <div><span style="font-size:0.75rem; font-weight:800; background:rgba(245,158,11,0.2); color:var(--accent-amber); padding:4px 8px; border-radius:4px;">PRC-02</span> <strong style="margin-left:8px;">Commercial Pricing &amp; Discounting Authorization Thresholds</strong></div>
+                            <span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;20% &bull; Active</span>
+                        </div>
+
+                        <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <div><span style="font-size:0.75rem; font-weight:800; background:rgba(239,68,68,0.2); color:var(--accent-red); padding:4px 8px; border-radius:4px;">LEG-01</span> <strong style="margin-left:8px;">Enterprise Liability Capping &amp; IP Indemnity Baseline</strong></div>
+                            <span style="font-size:0.75rem; color:var(--accent-amber); font-weight:700;">Tolerance Cap &plusmn;25% &bull; Review Required</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: NUDGE & INTERVENTION HUB -->
+            <div class="tab-view" id="view-interventions">
+                <div class="page-header">
+                    <div>
+                        <h2>Nudge &amp; Intervention Hub</h2>
+                        <p>Automated cognitive intervention logs &amp; executive resolution pipeline</p>
+                    </div>
+                    <button class="btn-quick-inject" onclick="showToast('⚡ Direct Nudge Dispatched to Lead')"><i class="fa-solid fa-paper-plane"></i> Dispatch Direct Nudge</button>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header">24H TOTAL NUDGES</div><div class="kpi-val">45 Dispatches</div></div>
+                    <div class="kpi-card"><div class="kpi-header">INTERVENTION SUCCESS RATE</div><div class="kpi-val" style="color:var(--accent-green);">91.2% <span style="font-size:0.8rem; color:var(--text-muted);">(41 Actioned)</span></div></div>
+                    <div class="kpi-card"><div class="kpi-header">MEAN RESOLUTION TIME</div><div class="kpi-val" style="color:var(--accent-purple);">1.4 Hours</div></div>
+                    <div class="kpi-card"><div class="kpi-header">ACTIVE ESCALATIONS</div><div class="kpi-val" style="color:var(--accent-red);">1 Board Level</div></div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>TIMESTAMP</th>
+                                    <th>TARGET UNIT / LEAD</th>
+                                    <th>CHANNEL</th>
+                                    <th>NUDGE MESSAGE CONTENT</th>
+                                    <th>STATUS</th>
+                                    <th>RESOLUTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>23:15:51</td>
+                                    <td><strong>Engineering</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: SEC-01</span></td>
+                                    <td><span class="source-tag">Slack Nudge Bot</span></td>
+                                    <td><span style="color:var(--accent-amber);">⚠️ Automated Nudge sent to Marcus Vance: Policy violation detected.</span></td>
+                                    <td><span class="status-pill delivered">Delivered</span></td>
+                                    <td>Pending</td>
+                                </tr>
+                                <tr>
+                                    <td>14:53:00</td>
+                                    <td><strong>Engineering - Marcus Vance</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: SEC-01</span></td>
+                                    <td><span class="source-tag">Slack Nudge Bot</span></td>
+                                    <td>⚠️ HELIX Cognitive Guardian: Jira ticket ENG-4892 was closed without required SecOps review. Please attach security verification before deployment.</td>
+                                    <td><span class="status-pill delivered">Delivered</span></td>
+                                    <td>Pending (ETA 15m)</td>
+                                </tr>
+                                <tr>
+                                    <td>14:49:12</td>
+                                    <td><strong>Sales - Sarah Jenkins</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: PRC-02</span></td>
+                                    <td><span class="source-tag">Jira Policy Banner</span></td>
+                                    <td>ℹ️ Discount override of 35% for Acme Corp flagged. CFO signoff link attached for rapid 1-click authorization.</td>
+                                    <td><span class="status-pill acknowledged">Acknowledged</span></td>
+                                    <td>8 mins</td>
+                                </tr>
+                                <tr>
+                                    <td>14:36:00</td>
+                                    <td><strong>Legal - David Chen</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: LEG-01</span></td>
+                                    <td><span class="source-tag" style="background:rgba(239,68,68,0.2); color:var(--accent-red);">Teams Executive Alert</span></td>
+                                    <td>🚨 High Liability Exposure: Unlimited indemnity clause detected in MSA draft. Audit Committee notification triggered.</td>
+                                    <td><span class="status-pill escalated">Escalated</span></td>
+                                    <td>Escalated to Board</td>
+                                </tr>
+                                <tr>
+                                    <td>14:15:30</td>
+                                    <td><strong>Product - Elena Rostova</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: ARCH-03</span></td>
+                                    <td><span class="source-tag">Slack Nudge Bot</span></td>
+                                    <td>✅ Architectural Nudge: Custom DB hook converted to standard API Gateway rate limiter policy.</td>
+                                    <td><span class="status-pill actioned">Actioned</span></td>
+                                    <td>4 mins</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <!-- Slide-Over Inspector Drawer Modal -->
+    <!-- Slide-Over Inspector Drawer Modal (Matching Screenshot #1 & #2) -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-header">
@@ -1241,30 +1248,108 @@
                 <span>7-Day Drift Trajectory</span>
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Daily Sampling</span>
             </div>
-            <div style="height: 160px; width: 100%;">
+            <div style="height: 140px; width: 100%;">
                 <canvas id="trajectoryChart"></canvas>
             </div>
         </div>
 
-        <button class="btn-trigger-intervention" onclick="showToast('✅ Nudge Intervention Triggered & Saved to Audit Log')">
+        <!-- Primary Behavioral Drift Topic & Flagged Telemetry Section (Screenshot #1) -->
+        <div class="behavioral-topic-box">
+            <div class="behavioral-topic-label">PRIMARY BEHAVIORAL DRIFT TOPIC</div>
+            <div class="behavioral-topic-title" id="drawerBehavioralTopic">Custom IP Indemnity Clause Amendments in Enterprise MSAs</div>
+        </div>
+
+        <div class="flagged-telemetry-section">
+            <div class="flagged-telemetry-header">
+                <span>Recent Flagged Telemetry (2)</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted);">Live Ingest</span>
+            </div>
+
+            <!-- Card 1 -->
+            <div class="telemetry-card">
+                <div class="telemetry-card-top">
+                    <div><span class="source-tag confluence">Confluence</span> <span class="time-tag">14:35:12</span></div>
+                    <span class="drift-tag red">Drift 0.79</span>
+                </div>
+                <div class="telemetry-card-text" id="flaggedCardText1">MSA Spec Edit: Modified IP ownership indemnity clause for Tier-1 Customer...</div>
+                <div class="telemetry-card-matched">Matched Baseline: <strong>Enterprise Liability Capping &amp; IP Indemnity Baseline</strong></div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="telemetry-card">
+                <div class="telemetry-card-top">
+                    <div><span class="source-tag slack">Slack</span> <span class="time-tag">14:05:55</span></div>
+                    <span class="drift-tag amber">Drift 0.58</span>
+                </div>
+                <div class="telemetry-card-text" id="flaggedCardText2">#compliance: Data retention policy exception granted for EMEA vendor...</div>
+                <div class="telemetry-card-matched">Matched Baseline: <strong>Enterprise Liability Capping &amp; IP Indemnity Baseline</strong></div>
+            </div>
+        </div>
+
+        <button class="btn-trigger-intervention" onclick="showToast('⚡ Nudge Intervention Triggered &amp; Saved to Audit Log')">
             <i class="fa-solid fa-bolt"></i> Trigger Nudge Intervention
         </button>
     </div>
 
     <!-- JavaScript Interactivity -->
     <script>
-        // Real-Time Fluctuating Ingestion Counter (1,390 -> 1,445)
-        setInterval(() => {
-            const counterEl = document.getElementById('ingestCounter');
-            const currentVal = parseInt(counterEl.innerText.replace(',', ''));
-            const delta = Math.floor(Math.random() * 25) - 12;
-            let newVal = currentVal + delta;
-            if (newVal < 1390) newVal = 1395;
-            if (newVal > 1445) newVal = 1438;
-            counterEl.innerText = newVal.toLocaleString();
-        }, 2000);
+        // Live Stream State (Toggling Resume / Pause)
+        let isStreamActive = false;
+        let ingestInterval;
 
-        // Toast Notification System
+        function toggleStream() {
+            isStreamActive = !isStreamActive;
+            const btn = document.getElementById('btnToggleStream');
+            const statusBox = document.getElementById('sidebarStreamStatus');
+            const statusText = document.getElementById('streamStatusText');
+            const pulse = document.getElementById('headerPulse');
+            const badgeTelemetry = document.getElementById('badgeTelemetry');
+
+            if (isStreamActive) {
+                btn.innerText = 'Pause';
+                statusBox.className = 'stream-status active';
+                statusText.innerText = 'Stream Active';
+                pulse.classList.remove('paused');
+                badgeTelemetry.innerText = 'ACTIVE';
+                badgeTelemetry.className = 'nav-badge active';
+                showToast('🟢 Telemetry Ingestion Stream Resumed (Active)');
+                startIngestTicking();
+            } else {
+                btn.innerText = 'Resume';
+                statusBox.className = 'stream-status paused';
+                statusText.innerText = 'Stream Paused';
+                pulse.classList.add('paused');
+                badgeTelemetry.innerText = 'PAUSED';
+                badgeTelemetry.className = 'nav-badge paused';
+                showToast('⏸️ Telemetry Ingestion Stream Paused');
+                clearInterval(ingestInterval);
+            }
+        }
+
+        function startIngestTicking() {
+            clearInterval(ingestInterval);
+            ingestInterval = setInterval(() => {
+                if (!isStreamActive) return;
+                const counterEl = document.getElementById('ingestCounter');
+                const currentVal = parseInt(counterEl.innerText.replace(',', ''));
+                const delta = Math.floor(Math.random() * 25) - 12;
+                let newVal = currentVal + delta;
+                if (newVal < 1390) newVal = 1395;
+                if (newVal > 1445) newVal = 1438;
+                counterEl.innerText = newVal.toLocaleString();
+            }, 1800);
+        }
+
+        // SPA Tab Switching
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active'));
+            document.getElementById('view-' + tabId).classList.add('active');
+        }
+
+        // Global Toast Notification System
         let toastTimeout;
         function showToast(message) {
             const toastEl = document.getElementById('toastContainer');
@@ -1313,7 +1398,7 @@
         initChart();
 
         // Slide-Over Drawer Controls
-        function openDrawer(deptName, leadName, driftVal, cohesionVal, rawStream, policyTitle, policyDesc) {
+        function openDrawer(deptName, leadName, driftVal, cohesionVal, rawStream, policyTitle, policyDesc, topicName) {
             document.getElementById('drawerTitle').innerText = deptName + " Inspector";
             document.getElementById('drawerLead').innerText = "Lead: " + leadName;
             document.getElementById('drawerDriftVal').innerText = driftVal;
@@ -1321,6 +1406,7 @@
             document.getElementById('drawerRawStream').innerText = rawStream;
             document.getElementById('drawerPolicyTitle').innerText = policyTitle;
             document.getElementById('drawerPolicyDesc').innerText = policyDesc;
+            document.getElementById('drawerBehavioralTopic').innerText = topicName || "Custom IP Indemnity Clause Amendments in Enterprise MSAs";
             document.getElementById('drawerNudgeText').innerText = "Send Slack Nudge to " + leadName.split(' ')[0] + " " + leadName.split(' ')[1];
             document.getElementById('drawerAvatar').innerText = deptName.substring(0, 3).toUpperCase();
 
@@ -1335,9 +1421,21 @@
             document.getElementById('drawer').classList.add('open');
         }
 
+        function closeModal() { closeDrawer(); }
         function closeDrawer() {
             document.getElementById('drawerOverlay').classList.remove('open');
             document.getElementById('drawer').classList.remove('open');
+        }
+
+        function toggleExpandRow(btn) {
+            const tr = btn.closest('tr').nextElementSibling;
+            if (tr.style.display === 'none' || !tr.style.display) {
+                tr.style.display = 'table-row';
+                btn.innerText = 'Collapse';
+            } else {
+                tr.style.display = 'none';
+                btn.innerText = 'Detail';
+            }
         }
     </script>
 </body>
