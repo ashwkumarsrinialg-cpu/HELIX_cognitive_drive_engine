@@ -199,7 +199,7 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
   const avgCohesion = (departments.reduce((acc, d) => acc + d.cohesionIndex, 0) / departments.length).toFixed(1);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0B0F17', color: '#F3F4F6' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#0B0F17', color: '#F3F4F6', overflow: 'hidden' }}>
       {/* Sidebar Navigation */}
       <Sidebar
         currentView={currentView}
