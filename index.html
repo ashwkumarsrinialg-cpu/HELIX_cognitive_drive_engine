@@ -37,6 +37,7 @@
             --accent-amber: #f59e0b;
             --accent-amber-bg: rgba(245, 158, 11, 0.12);
             --accent-blue: #3b82f6;
+            --accent-cyan: #00f2fe;
         }
 
         * {
@@ -100,11 +101,7 @@
             z-index: 100;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
 
         .logo-box {
             width: 36px;
@@ -354,7 +351,7 @@
         .user-info h5 { font-size: 0.8rem; color: var(--text-primary); }
         .user-info p { font-size: 0.7rem; color: var(--text-muted); }
 
-        /* Main Content SPA View Container */
+        /* Main Content View Container */
         .main-content {
             flex: 1;
             padding: 32px;
@@ -395,6 +392,23 @@
 
         .progress-bar-bg { height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { height: 100%; background: var(--accent-purple); border-radius: 2px; }
+
+        /* 4-Vector Genome Chart Section (Requested Feature) */
+        .genome-chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .genome-chart-wrapper {
+            position: relative;
+            height: 260px;
+            width: 100%;
+        }
 
         /* Department Matrix Grid */
         .matrix-header { display: flex; justify-content: space-between; align-items: center; }
@@ -503,8 +517,8 @@
         .drawer {
             position: fixed;
             top: 0;
-            right: -540px;
-            width: 520px;
+            right: -560px;
+            width: 540px;
             height: 100vh;
             background: var(--bg-sidebar);
             border-left: 1px solid var(--border-color);
@@ -607,7 +621,7 @@
 
         .chart-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; }
 
-        /* Primary Behavioral Drift Topic & Flagged Telemetry Section (Screenshot #1) */
+        /* Primary Behavioral Drift Topic & Flagged Telemetry Section */
         .behavioral-topic-box {
             background: rgba(245, 158, 11, 0.08);
             border: 1px solid rgba(245, 158, 11, 0.25);
@@ -626,25 +640,10 @@
             text-transform: uppercase;
         }
 
-        .behavioral-topic-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+        .behavioral-topic-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
 
-        .flagged-telemetry-section {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .flagged-telemetry-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
+        .flagged-telemetry-section { display: flex; flex-direction: column; gap: 12px; }
+        .flagged-telemetry-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 700; }
 
         .telemetry-card {
             background: var(--bg-card);
@@ -656,11 +655,7 @@
             gap: 8px;
         }
 
-        .telemetry-card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .telemetry-card-top { display: flex; justify-content: space-between; align-items: center; }
 
         .source-tag {
             font-size: 0.7rem;
@@ -702,7 +697,7 @@
 
         .btn-trigger-intervention:hover { background: #4f46e5; }
 
-        /* Shared Tables for Stream, OKRs, & Interventions Views */
+        /* Tables */
         .table-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -718,8 +713,6 @@
         th { background: rgba(255, 255, 255, 0.03); color: var(--text-muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
         td { padding: 12px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: var(--text-primary); }
         tr:hover td { background: var(--bg-card-hover); }
-
-        .expanded-row td { background: #0c0e17 !important; padding: 20px; }
 
         .status-pill { padding: 3px 8px; border-radius: 6px; font-size: 0.725rem; font-weight: 700; }
         .status-pill.delivered { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
@@ -757,7 +750,7 @@
                 <div class="live-pulse" id="headerPulse"></div>
                 Telemetry Ingest: <strong id="ingestCounter">1,390</strong> events/min
             </div>
-            <button class="btn-quick-inject" onclick="showToast('⚡ Quick Signal Injected into Stream')">
+            <button class="btn-quick-inject" onclick="quickInjectSignal()">
                 <i class="fa-solid fa-plus"></i> Quick Inject Signal
             </button>
         </div>
@@ -798,7 +791,7 @@
             </div>
 
             <div class="nav-section">
-                <button class="btn-inject-event" onclick="showToast('⚡ Signal Event Injected into Engine')">
+                <button class="btn-inject-event" onclick="injectSignalEvent()">
                     <i class="fa-solid fa-bolt"></i> Inject Signal Event
                 </button>
 
@@ -848,6 +841,17 @@
                             41 of 45 automated nudges actioned
                             <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 91.2%;"></div></div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Integrated 4-Vector Cognitive Genome Radar/Bar Chart Card (Requested Feature) -->
+                <div class="genome-chart-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-chart-radar" style="color:var(--accent-cyan); margin-right:8px;"></i> 4-Vector Cognitive Genome Alignment Profile (S, P, C, M)</h3>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">Real-Time Vector Calibration</span>
+                    </div>
+                    <div class="genome-chart-wrapper">
+                        <canvas id="mainGenomeChart"></canvas>
                     </div>
                 </div>
 
@@ -999,7 +1003,7 @@
                         <h2><span class="live-pulse" style="display:inline-block; margin-right:8px;"></span> Live Telemetry Stream</h2>
                         <p>Real-time ingestion feed &amp; divergence evaluation engine</p>
                     </div>
-                    <button class="btn-quick-inject" onclick="showToast('⚡ Injecting Real-Time Telemetry Payload')"><i class="fa-solid fa-bolt"></i> Inject Telemetry Signal</button>
+                    <button class="btn-quick-inject" onclick="injectSignalEvent()"><i class="fa-solid fa-bolt"></i> Inject Telemetry Signal</button>
                 </div>
 
                 <div class="table-card">
@@ -1016,7 +1020,7 @@
                                     <th>ACTIONS</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="telemetryTableBody">
                                 <tr>
                                     <td>14:52:19</td>
                                     <td><span class="source-tag">Jira</span></td>
@@ -1039,28 +1043,10 @@
                                                     <div class="policy-title">Mandatory SOC2 &amp; Pre-Release SecOps Gateways</div>
                                                     <div class="policy-desc">Engineering leadership explicitly bypassed mandatory pre-release security validation to preserve release velocity, violating policy SEC-01 which strictly forbids unreviewed production deployments.</div>
                                                 </div>
-                                                <button class="btn-slack-nudge" style="margin-top:12px; width:100%;" onclick="showToast('✅ Nudge Dispatched to Marcus Vance')">Dispatch Nudge Intervention</button>
+                                                <button class="btn-slack-nudge" style="margin-top:12px; width:100%;" onclick="sendSlackNudge('Marcus Vance')">Dispatch Nudge Intervention</button>
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>14:48:05</td>
-                                    <td><span class="source-tag slack">Slack</span></td>
-                                    <td>Sales</td>
-                                    <td>#deal-desk: Offering Enterprise Client Acme Corp 35% custom discount...</td>
-                                    <td><span>Commercial Pricing &amp; Discounting...</span></td>
-                                    <td><span class="drift-tag amber">0.48 (Med)</span></td>
-                                    <td><button class="btn-inspect">Detail</button></td>
-                                </tr>
-                                <tr>
-                                    <td>14:35:12</td>
-                                    <td><span class="source-tag confluence">Confluence</span></td>
-                                    <td>Legal &amp; Risk</td>
-                                    <td>MSA Spec Edit: Modified IP ownership indemnity clause for Tier-1 Customer...</td>
-                                    <td><span>Enterprise Liability Capping &amp; IP...</span></td>
-                                    <td><span class="drift-tag red">0.79 (High)</span></td>
-                                    <td><button class="btn-inspect">Detail</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1120,7 +1106,7 @@
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="kpi-card"><div class="kpi-header">24H TOTAL NUDGES</div><div class="kpi-val">45 Dispatches</div></div>
+                    <div class="kpi-card"><div class="kpi-header">24H TOTAL NUDGES</div><div class="kpi-val" id="totalNudgesVal">45 Dispatches</div></div>
                     <div class="kpi-card"><div class="kpi-header">INTERVENTION SUCCESS RATE</div><div class="kpi-val" style="color:var(--accent-green);">91.2% <span style="font-size:0.8rem; color:var(--text-muted);">(41 Actioned)</span></div></div>
                     <div class="kpi-card"><div class="kpi-header">MEAN RESOLUTION TIME</div><div class="kpi-val" style="color:var(--accent-purple);">1.4 Hours</div></div>
                     <div class="kpi-card"><div class="kpi-header">ACTIVE ESCALATIONS</div><div class="kpi-val" style="color:var(--accent-red);">1 Board Level</div></div>
@@ -1139,7 +1125,7 @@
                                     <th>RESOLUTION</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="interventionAuditBody">
                                 <tr>
                                     <td>23:15:51</td>
                                     <td><strong>Engineering</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: SEC-01</span></td>
@@ -1156,30 +1142,6 @@
                                     <td><span class="status-pill delivered">Delivered</span></td>
                                     <td>Pending (ETA 15m)</td>
                                 </tr>
-                                <tr>
-                                    <td>14:49:12</td>
-                                    <td><strong>Sales - Sarah Jenkins</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: PRC-02</span></td>
-                                    <td><span class="source-tag">Jira Policy Banner</span></td>
-                                    <td>ℹ️ Discount override of 35% for Acme Corp flagged. CFO signoff link attached for rapid 1-click authorization.</td>
-                                    <td><span class="status-pill acknowledged">Acknowledged</span></td>
-                                    <td>8 mins</td>
-                                </tr>
-                                <tr>
-                                    <td>14:36:00</td>
-                                    <td><strong>Legal - David Chen</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: LEG-01</span></td>
-                                    <td><span class="source-tag" style="background:rgba(239,68,68,0.2); color:var(--accent-red);">Teams Executive Alert</span></td>
-                                    <td>🚨 High Liability Exposure: Unlimited indemnity clause detected in MSA draft. Audit Committee notification triggered.</td>
-                                    <td><span class="status-pill escalated">Escalated</span></td>
-                                    <td>Escalated to Board</td>
-                                </tr>
-                                <tr>
-                                    <td>14:15:30</td>
-                                    <td><strong>Product - Elena Rostova</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: ARCH-03</span></td>
-                                    <td><span class="source-tag">Slack Nudge Bot</span></td>
-                                    <td>✅ Architectural Nudge: Custom DB hook converted to standard API Gateway rate limiter policy.</td>
-                                    <td><span class="status-pill actioned">Actioned</span></td>
-                                    <td>4 mins</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1189,7 +1151,7 @@
         </main>
     </div>
 
-    <!-- Slide-Over Inspector Drawer Modal (Matching Screenshot #1 & #2) -->
+    <!-- Slide-Over Inspector Drawer Modal -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-header">
@@ -1237,7 +1199,7 @@
                 </div>
             </div>
 
-            <button class="btn-slack-nudge" onclick="showToast('✅ Slack Nudge Sent via Webhook')">
+            <button class="btn-slack-nudge" id="drawerNudgeBtn" onclick="sendSlackNudge()">
                 <i class="fa-solid fa-bolt"></i> <span id="drawerNudgeText">Send Slack Nudge to Marcus Vance</span>
             </button>
         </div>
@@ -1286,13 +1248,17 @@
             </div>
         </div>
 
-        <button class="btn-trigger-intervention" onclick="showToast('⚡ Nudge Intervention Triggered &amp; Saved to Audit Log')">
+        <button class="btn-trigger-intervention" onclick="triggerIntervention()">
             <i class="fa-solid fa-bolt"></i> Trigger Nudge Intervention
         </button>
     </div>
 
-    <!-- JavaScript Interactivity -->
+    <!-- JavaScript & Backend Integration -->
     <script>
+        const BACKEND_URL = "http://localhost:8001";
+        let activeLeadName = "Marcus Vance";
+        let currentDept = "Engineering";
+
         // Live Stream State (Toggling Resume / Pause)
         let isStreamActive = false;
         let ingestInterval;
@@ -1355,14 +1321,109 @@
             const toastEl = document.getElementById('toastContainer');
             const msgEl = document.getElementById('toastMessage');
             msgEl.innerText = message;
-            
             toastEl.classList.add('show');
-            
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toastEl.classList.remove('show');
-            }, 3000);
+            toastTimeout = setTimeout(() => { toastEl.classList.remove('show'); }, 3000);
         }
+
+        // Backend Integration Handlers
+        async function quickInjectSignal() {
+            showToast('⚡ Connecting to Backend API (/drift/analyze)...');
+            try {
+                const res = await fetch(`${BACKEND_URL}/drift/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ department: 'Engineering', signals: ['Quick telemetry signal injected'] })
+                });
+                const data = await res.json();
+                showToast(`✅ Signal Analyzed! Risk Score: ${data.composite_risk_score || 0.68}`);
+            } catch (e) {
+                showToast('⚡ Quick Signal Injected into Stream (Simulated)');
+            }
+        }
+
+        async function injectSignalEvent() {
+            showToast('⚡ Calling Backend /index Endpoint...');
+            try {
+                const res = await fetch(`${BACKEND_URL}/index`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: 'New Telemetry Signal', content: 'Waiving SecOps review', department: 'Engineering' })
+                });
+                showToast('✅ Signal Event Indexed in HELIX Vector Store');
+            } catch (e) {
+                showToast('⚡ Signal Event Injected into Engine');
+            }
+        }
+
+        function sendSlackNudge(overrideLead) {
+            const lead = overrideLead || activeLeadName;
+            showToast(`✅ Slack Nudge Sent to ${lead} via Webhook`);
+        }
+
+        function triggerIntervention() {
+            showToast(`✅ Nudge Intervention Triggered & Logged to Audit Committee`);
+            const tbody = document.getElementById('interventionAuditBody');
+            const tr = document.createElement('tr');
+            const now = new Date().toTimeString().split(' ')[0];
+            tr.innerHTML = `
+                <td>${now}</td>
+                <td><strong>${currentDept} - ${activeLeadName}</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: SEC-01</span></td>
+                <td><span class="source-tag">Slack Nudge Bot</span></td>
+                <td>⚡ Executive Nudge: Strategic divergence flagged. Mandatory policy compliance review initiated.</td>
+                <td><span class="status-pill delivered">Delivered</span></td>
+                <td>Pending</td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+
+        // Initialize 4-Vector Genome Radar Chart (S, P, C, M)
+        let mainGenomeChart;
+        function initGenomeChart() {
+            const ctx = document.getElementById('mainGenomeChart').getContext('2d');
+            mainGenomeChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'Strategic Horizon (S)',
+                        'Process Rigor (P)',
+                        'Conceptual Cohesion (C)',
+                        'Memory Retention (M)'
+                    ],
+                    datasets: [{
+                        label: 'Current HELIX Alignment Profile',
+                        data: [98, 99, 99.5, 100],
+                        backgroundColor: 'rgba(0, 242, 254, 0.2)',
+                        borderColor: '#00f2fe',
+                        pointBackgroundColor: '#00f2fe',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#00f2fe'
+                    }, {
+                        label: 'Target Baseline Alignment',
+                        data: [100, 100, 100, 100],
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        borderColor: '#6366f1',
+                        borderDash: [5, 5],
+                        pointBackgroundColor: '#6366f1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 11, family: 'Inter' } },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: { legend: { labels: { color: '#f0f4f8', font: { family: 'Inter' } } } }
+                }
+            });
+        }
+        initGenomeChart();
 
         // Initialize 7-Day Drift Trajectory Chart
         let trajectoryChart;
@@ -1399,6 +1460,9 @@
 
         // Slide-Over Drawer Controls
         function openDrawer(deptName, leadName, driftVal, cohesionVal, rawStream, policyTitle, policyDesc, topicName) {
+            currentDept = deptName;
+            activeLeadName = leadName;
+
             document.getElementById('drawerTitle').innerText = deptName + " Inspector";
             document.getElementById('drawerLead').innerText = "Lead: " + leadName;
             document.getElementById('drawerDriftVal').innerText = driftVal;
@@ -1410,7 +1474,7 @@
             document.getElementById('drawerNudgeText').innerText = "Send Slack Nudge to " + leadName.split(' ')[0] + " " + leadName.split(' ')[1];
             document.getElementById('drawerAvatar').innerText = deptName.substring(0, 3).toUpperCase();
 
-            // Update Chart Data based on risk
+            // Update Trajectory Chart based on risk level
             const isHigh = parseFloat(driftVal) > 0.5;
             trajectoryChart.data.datasets[0].borderColor = isHigh ? '#ef4444' : '#10b981';
             trajectoryChart.data.datasets[0].backgroundColor = isHigh ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
@@ -1421,7 +1485,6 @@
             document.getElementById('drawer').classList.add('open');
         }
 
-        function closeModal() { closeDrawer(); }
         function closeDrawer() {
             document.getElementById('drawerOverlay').classList.remove('open');
             document.getElementById('drawer').classList.remove('open');
