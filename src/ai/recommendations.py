@@ -37,9 +37,7 @@ class RealignmentActionPlan:
 
 
 class AntiDriftRecommendationEngine:
-    """
-    Generates actionable, prioritized anti-drift recommendations to restore organizational alignment.
-    """
+    """Generates actionable, prioritized anti-drift recommendations."""
 
     def __init__(self, llm_client: Optional[LLMClient] = None):
         self.llm_client = llm_client or LLMClient()
@@ -51,7 +49,6 @@ class AntiDriftRecommendationEngine:
         issues: List[str],
         context_docs: Optional[List[Dict[str, Any]]] = None
     ) -> RealignmentActionPlan:
-        """Generates an Anti-Drift Realignment Action Plan for a department."""
         context_str = ""
         if context_docs:
             context_str = "\n".join([d.get("content", str(d)) for d in context_docs])

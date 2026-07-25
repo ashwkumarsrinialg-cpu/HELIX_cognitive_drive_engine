@@ -31,9 +31,7 @@ def bm25_lexical_score(
     b: float = 0.75,
     avg_dl: float = 100.0
 ) -> float:
-    """
-    Computes BM25 lexical keyword relevance score for hybrid RAG search.
-    """
+    """Computes BM25 lexical keyword relevance score for hybrid RAG search."""
     query_terms = re.findall(r'\w+', query.lower())
     doc_terms = re.findall(r'\w+', document.lower())
 
@@ -61,9 +59,7 @@ def hybrid_rrf_score(
     lexical_rank: int,
     rrf_k: int = 60
 ) -> float:
-    """
-    Reciprocal Rank Fusion (RRF) algorithm to combine vector and lexical search rankings.
-    """
+    """Reciprocal Rank Fusion (RRF) algorithm to combine vector and lexical search rankings."""
     v_score = 1.0 / (rrf_k + vector_rank) if vector_rank > 0 else 0.0
     l_score = 1.0 / (rrf_k + lexical_rank) if lexical_rank > 0 else 0.0
     return round(v_score + l_score, 6)
@@ -73,7 +69,6 @@ class EmbeddingEngine:
     """
     Advanced Embedding Engine for HELIX.
     Generates 1536-dimensional L2-normalized dense vector representations for documents and queries.
-    Supports OpenAI API embeddings or a built-in deterministic subword hashing encoder.
     """
 
     def __init__(self, model_name: str = "text-embedding-3-small", dimension: int = 1536):
@@ -106,6 +101,11 @@ class EmbeddingEngine:
 
         return self._generate_fallback_embedding(text)
 
+    def embed_query(self, text: str) -> List[float]:
+        """Alias for embed_text."""
+        return self.embed_text(text)
+
+
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         """Generates embeddings for a batch of text strings."""
         if not texts:
@@ -124,10 +124,7 @@ class EmbeddingEngine:
         return [self._generate_fallback_embedding(t) for t in texts]
 
     def _generate_fallback_embedding(self, text: str) -> List[float]:
-        """
-        Generates a deterministic 1536-dimensional L2-normalized vector embedding
-        using subword n-gram hashing and term weighting.
-        """
+        """Generates a deterministic 1536-dimensional L2-normalized vector embedding."""
         vec = [0.0] * self.dimension
         cleaned = text.lower().strip()
         words = re.findall(r'\w+', cleaned)

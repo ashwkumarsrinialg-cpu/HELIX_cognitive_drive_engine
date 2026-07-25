@@ -101,6 +101,11 @@ class EmbeddingEngine:
 
         return self._generate_fallback_embedding(text)
 
+    def embed_query(self, text: str) -> List[float]:
+        """Alias for embed_text."""
+        return self.embed_text(text)
+
+
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         """Generates embeddings for a batch of text strings."""
         if not texts:

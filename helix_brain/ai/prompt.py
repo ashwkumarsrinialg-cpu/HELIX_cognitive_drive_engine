@@ -172,8 +172,15 @@ class PromptManager:
                 doc_texts.append(f"--- PASSAGE [{i}]: {title} (Doc ID: {doc_id} | Source: {source}) ---\n{content}")
             context_text = "\n\n".join(doc_texts)
 
+    @staticmethod
+    def get_rag_system_prompt() -> str:
+        return SYSTEM_COGNITIVE_GENOME_PROMPT
+
+    @staticmethod
+    def get_rag_user_prompt(question: str, context: str, department: Optional[str] = "General Enterprise") -> str:
         return ENTERPRISE_QA_PROMPT.format(
             question=question,
-            department=department,
-            context=context_text,
+            department=department or "General Enterprise",
+            context=context or "No relevant passages found."
         )
+

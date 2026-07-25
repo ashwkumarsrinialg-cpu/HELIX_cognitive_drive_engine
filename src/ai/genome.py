@@ -7,9 +7,7 @@ from typing import Dict, Any, List, Optional
 
 
 class CognitiveGenome:
-    """
-    Models the 4-Vector Enterprise Cognitive Genome profile of a department or team.
-    """
+    """Models the 4-Vector Enterprise Cognitive Genome profile."""
 
     def __init__(
         self,
@@ -24,7 +22,6 @@ class CognitiveGenome:
         self.knowledge_retention = max(0.0, min(1.0, float(knowledge_retention)))
 
     def to_vector(self) -> List[float]:
-        """Returns 4D float vector representing cognitive alignment state."""
         return [
             self.strategic_alignment,
             self.process_consistency,
@@ -33,13 +30,11 @@ class CognitiveGenome:
         ]
 
     def compute_composite_alignment(self) -> float:
-        """Calculates weighted composite alignment score (0.0 to 1.0)."""
         weights = [0.30, 0.25, 0.25, 0.20]
         vec = self.to_vector()
         return round(sum(w * v for w, v in zip(weights, vec)), 4)
 
     def compute_drift_score(self) -> float:
-        """Calculates cognitive drift score = 1.0 - composite alignment."""
         return round(1.0 - self.compute_composite_alignment(), 4)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -54,9 +49,7 @@ class CognitiveGenome:
 
 
 class DepartmentGenomeProfile:
-    """
-    Department-level Cognitive Genome profile including baseline vectors and historical alignment trajectory.
-    """
+    """Department-level Cognitive Genome profile including baseline vectors."""
 
     def __init__(
         self,
@@ -71,7 +64,6 @@ class DepartmentGenomeProfile:
         self.last_updated = int(time.time())
 
     def record_snapshot(self, genome: CognitiveGenome):
-        """Records a timestamped cognitive snapshot into department history."""
         self.current_genome = genome
         self.last_updated = int(time.time())
         self.history.append({
@@ -80,7 +72,6 @@ class DepartmentGenomeProfile:
         })
 
     def get_drift_velocity(self) -> float:
-        """Calculates rate of drift change across historical snapshots."""
         if len(self.history) < 2:
             return 0.0
         first_drift = self.history[0]["genome"]["drift_score"]

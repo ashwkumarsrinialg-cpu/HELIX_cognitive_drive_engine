@@ -3,7 +3,6 @@ HELIX: Advanced Enterprise Cognitive Genome Platform - Drift Diagnostic Engine
 """
 
 import json
-import math
 from typing import Dict, Any, List, Optional
 from .genome import CognitiveGenome, DepartmentGenomeProfile
 from .llm import LLMClient
@@ -50,10 +49,7 @@ class DriftDiagnostic:
 
 
 class CognitiveDriftEngine:
-    """
-    Advanced Cognitive Drift Diagnostic Engine.
-    Combines vector divergence algorithms with LLM Chain-of-Thought diagnostics.
-    """
+    """Advanced Cognitive Drift Diagnostic Engine."""
 
     def __init__(self, llm_client: Optional[LLMClient] = None):
         self.llm_client = llm_client or LLMClient()
@@ -65,7 +61,6 @@ class CognitiveDriftEngine:
         signals: List[str],
         timeframe: str = "Last 30 Days"
     ) -> DriftDiagnostic:
-        """Evaluates operational signals to diagnose cognitive drift."""
         prompt = PromptManager.get_drift_detection_prompt(
             department=department,
             signals=signals,
@@ -92,7 +87,6 @@ class CognitiveDriftEngine:
         risk = parsed.get("risk_assessment", "Unchecked drift will increase rework during cross-team integration phases.")
         summary = parsed.get("summary", f"Department {department} exhibits moderate cognitive drift (score: {drift_score}).")
 
-        # Update department profile
         genome = CognitiveGenome(
             strategic_alignment=dims.get("strategic_alignment", 0.8),
             process_consistency=dims.get("process_consistency", 0.7),
