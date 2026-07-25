@@ -22,10 +22,14 @@ export const DepartmentDrawer: React.FC<DepartmentDrawerProps> = ({
 }) => {
   if (!department) return null;
 
-  const deptTelemetries = telemetries.filter(
-    (t) => t.department.toLowerCase() === department.name.toLowerCase() ||
-           (department.name.includes('Legal') && t.department.includes('Legal'))
-  );
+  const deptTelemetries = telemetries.filter((t) => {
+    const deptName = department.name.toLowerCase();
+    const sigDept = t.department.toLowerCase();
+    return deptName === sigDept ||
+           deptName.includes(sigDept) ||
+           sigDept.includes(deptName) ||
+           (deptName.includes('legal') && sigDept.includes('legal'));
+  });
 
   const primarySignal = deptTelemetries.find(t => t.severity === 'High') || deptTelemetries[0];
   
