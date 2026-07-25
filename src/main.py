@@ -289,10 +289,19 @@ def run_standalone_server(port: int = 8000):
                 self.end_headers()
                 self.wfile.write(json.dumps(data, indent=2).encode('utf-8'))
 
-        print(f"🚀 Starting HELIX Advanced HTTP Server on port {port}...")
-        with socketserver.TCPServer(("0.0.0.0", port), SimpleHandler) as httpd:
-            httpd.serve_forever()
+        socketserver.TCPServer.allow_reuse_address = True
+        for p in [port, 8001, 8002, 8080]:
+            try:
+                print(f"🚀 Starting HELIX Advanced HTTP Server on port {p}...")
+                with socketserver.TCPServer(("0.0.0.0", p), SimpleHandler) as httpd:
+                    httpd.serve_forever()
+                break
+            except (OSError, PermissionError):
+                print(f"  [!] Port {p} unavailable, trying fallback port...")
+                continue
 
 
 if __name__ == "__main__":
     run_standalone_server()
+
+
