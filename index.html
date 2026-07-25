@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Three.js for 3D 4-Vector Genome Visualizer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
@@ -393,21 +395,63 @@
         .progress-bar-bg { height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { height: 100%; background: var(--accent-purple); border-radius: 2px; }
 
-        /* 4-Vector Genome Chart Section */
-        .genome-chart-card {
+        /* 3D 4-Vector Cognitive Genome Container (Requested Feature) */
+        .genome-3d-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .genome-chart-wrapper {
-            position: relative;
-            height: 260px;
+        .genome-3d-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .threejs-canvas-wrapper {
             width: 100%;
+            height: 280px;
+            border-radius: 12px;
+            background: #080a10;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .vector-legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .vector-node-box {
+            background: #0f121d;
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .vector-node-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .vector-val-badge {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
         }
 
         /* Department Matrix Grid */
@@ -497,7 +541,7 @@
 
         .btn-inspect:hover { background: var(--accent-purple); color: #fff; }
 
-        /* Slide-Over Drawer Modal */
+        /* Slide-Over Inspector Drawer Modal */
         .drawer-overlay {
             position: fixed;
             top: 0;
@@ -719,6 +763,47 @@
         .status-pill.acknowledged { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
         .status-pill.escalated { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
         .status-pill.actioned { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+        /* Action Input Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-highlight);
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .modal-input:focus { border-color: var(--accent-purple); }
     </style>
 </head>
 <body>
@@ -728,6 +813,21 @@
         <div class="toast-content">
             <i class="fa-solid fa-circle-check"></i>
             <span id="toastMessage">✅ Slack Nudge Sent via Webhook</span>
+        </div>
+    </div>
+
+    <!-- Interactive Signal Injection Modal -->
+    <div class="modal-overlay" id="signalModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:1.1rem; font-weight:700;">Inject Employee / Document Signal</h3>
+                <button onclick="closeSignalModal()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem;">&times;</button>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Add new document or employee telemetry log to dynamically recalculate 3D 4-Vector Genome Alignment.</p>
+            <input type="text" id="signalTitle" class="modal-input" placeholder="Signal Title / Ticket ID (e.g. ENG-5012)...">
+            <input type="text" id="signalDept" class="modal-input" placeholder="Department (e.g. Engineering, Sales)..." value="Engineering">
+            <textarea id="signalContent" class="modal-input" style="height:80px;" placeholder="Telemetry payload text (e.g., Waiving SecOps review)..."></textarea>
+            <button class="btn-trigger-intervention" onclick="submitSignalInjection()">Inject into Backend Vector Store &amp; Recalculate 3D Genome</button>
         </div>
     </div>
 
@@ -791,7 +891,7 @@
             </div>
 
             <div class="nav-section">
-                <button class="btn-inject-event" onclick="injectSignalEvent()">
+                <button class="btn-inject-event" onclick="openSignalModal()">
                     <i class="fa-solid fa-bolt"></i> Inject Signal Event
                 </button>
 
@@ -821,7 +921,7 @@
                 <div class="kpi-grid">
                     <div class="kpi-card">
                         <div class="kpi-header">Organizational Cohesion</div>
-                        <div class="kpi-body"><div class="kpi-val">85.4%</div><span class="kpi-chip green">↑ +2.1%</span></div>
+                        <div class="kpi-body"><div class="kpi-val" id="cohesionValMain">85.4%</div><span class="kpi-chip green">↑ +2.1%</span></div>
                         <div class="kpi-footer">Weighted cross-departmental alignment score</div>
                     </div>
                     <div class="kpi-card">
@@ -844,14 +944,43 @@
                     </div>
                 </div>
 
-                <!-- Integrated 4-Vector Cognitive Genome Radar Chart -->
-                <div class="genome-chart-card">
+                <!-- 3D 4-Vector Cognitive Genome Profile (S, P, C, M) -->
+                <div class="genome-3d-card">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-chart-radar" style="color:var(--accent-cyan); margin-right:8px;"></i> 4-Vector Cognitive Genome Alignment Profile (S, P, C, M)</h3>
-                        <span style="font-size:0.75rem; color:var(--text-muted);">Real-Time Vector Calibration</span>
+                        <div>
+                            <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-cube" style="color:var(--accent-cyan); margin-right:8px;"></i> 3D Interactive 4-Vector Cognitive Genome Model (S, P, C, M)</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Rotating 3D Orbital Mesh reflecting real-time alignment coordinates</p>
+                        </div>
+                        <button class="btn-resume" onclick="recalculate3DGenome()">Recalculate 3D Mesh</button>
                     </div>
-                    <div class="genome-chart-wrapper">
-                        <canvas id="mainGenomeChart"></canvas>
+
+                    <div class="genome-3d-layout">
+                        <!-- Three.js 3D Canvas -->
+                        <div class="threejs-canvas-wrapper" id="threejsContainer"></div>
+
+                        <!-- 4-Vector Live Coordinate Legend -->
+                        <div class="vector-legend-grid">
+                            <div class="vector-node-box">
+                                <div class="vector-node-title"><span style="color:var(--accent-cyan);">&bull; Vector S</span> Strategic Horizon</div>
+                                <div class="vector-val-badge" id="valS">98.0 / 100</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">Quarterly OKR Alignment</div>
+                            </div>
+                            <div class="vector-node-box">
+                                <div class="vector-node-title"><span style="color:var(--accent-purple);">&bull; Vector P</span> Process Rigor</div>
+                                <div class="vector-val-badge" id="valP" style="color:var(--accent-purple);">99.0 / 100</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">SecOps &amp; SOP Enforcement</div>
+                            </div>
+                            <div class="vector-node-box">
+                                <div class="vector-node-title"><span style="color:#ec4899;">&bull; Vector C</span> Conceptual Cohesion</div>
+                                <div class="vector-val-badge" id="valC" style="color:#ec4899;">99.5 / 100</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">Terminology Consistency</div>
+                            </div>
+                            <div class="vector-node-box">
+                                <div class="vector-node-title"><span style="color:var(--accent-green);">&bull; Vector M</span> Memory Retention</div>
+                                <div class="vector-val-badge" id="valM" style="color:var(--accent-green);">100.0 / 100</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">Knowledge Graph Continuity</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1046,14 +1175,14 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: LIVE TELEMETRY STREAM -->
+            <!-- VIEW 2: LIVE TELEMETRY STREAM WITH PARSED JSON METADATA -->
             <div class="tab-view" id="view-telemetry">
                 <div class="page-header">
                     <div>
                         <h2><span class="live-pulse" style="display:inline-block; margin-right:8px;"></span> Live Telemetry Stream</h2>
                         <p>Real-time ingestion feed &amp; divergence evaluation engine</p>
                     </div>
-                    <button class="btn-quick-inject" onclick="injectSignalEvent()"><i class="fa-solid fa-bolt"></i> Inject Telemetry Signal</button>
+                    <button class="btn-quick-inject" onclick="openSignalModal()"><i class="fa-solid fa-bolt"></i> Inject Telemetry Signal</button>
                 </div>
 
                 <div class="table-card">
@@ -1086,6 +1215,16 @@
                                             <div>
                                                 <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">RAW MESSAGE PAYLOAD (JIRA #ENG-4892)</div>
                                                 <div class="telemetry-raw-box">Ticket ENG-4892 marked as "RESOLVED/DEPLOYED". Comment from @m.vance: "Waiving the SecOps code review for sprint release deadline. We will patch vulnerability in hotfix release next week."</div>
+                                                
+                                                <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-top:12px; margin-bottom:6px;">PARSED METADATA JSON</div>
+                                                <pre class="telemetry-raw-box" style="color:var(--accent-cyan);">{
+  "ticket_id": "ENG-4892",
+  "status": "RESOLVED",
+  "override_flag": true,
+  "author": "marcus.vance",
+  "severity_score": 0.88,
+  "risk_factors": ["SOC2_VIOLATION", "UNREVIEWED_DEPLOYMENT"]
+}</pre>
                                             </div>
                                             <div>
                                                 <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">MATCHED STRATEGIC POLICY BASELINE (Drift: 0.88)</div>
@@ -1104,7 +1243,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: GENOME MANAGEMENT STUDIO -->
+            <!-- VIEW 3: GENOME MANAGEMENT STUDIO WITH KEY COUNTERS -->
             <div class="tab-view" id="view-genome">
                 <div class="page-header">
                     <div>
@@ -1125,10 +1264,21 @@
                                 <span style="font-size:0.75rem; color:var(--accent-green); font-weight:700;">Tolerance Cap &plusmn;15% &bull; Active</span>
                             </div>
                             <p style="font-size:0.825rem; color:var(--text-muted);">Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.</p>
+                            
+                            <!-- Key Counters Requested by User -->
                             <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:8px;">
-                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;"><span style="font-size:0.7rem; color:var(--text-muted);">ACTIVE TELEMETRY MONITORS</span><h5 style="font-size:1.1rem; font-weight:800;">14 Channels</h5></div>
-                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;"><span style="font-size:0.7rem; color:var(--text-muted);">ALIGNED TRANSMISSIONS</span><h5 style="font-size:1.1rem; font-weight:800; color:var(--accent-green);">9 Signals</h5></div>
-                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;"><span style="font-size:0.7rem; color:var(--text-muted);">FLAGGED DRIFT SIGNALS</span><h5 style="font-size:1.1rem; font-weight:800; color:var(--accent-red);">5 Signals</h5></div>
+                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;">
+                                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">ACTIVE TELEMETRY MONITORS</span>
+                                    <h5 style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">14 Channels</h5>
+                                </div>
+                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;">
+                                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">ALIGNED TRANSMISSIONS</span>
+                                    <h5 style="font-size:1.2rem; font-weight:800; color:var(--accent-green);">9 Signals</h5>
+                                </div>
+                                <div style="background:var(--bg-card); padding:12px; border-radius:8px;">
+                                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">FLAGGED DRIFT SIGNALS</span>
+                                    <h5 style="font-size:1.2rem; font-weight:800; color:var(--accent-red);">5 Signals</h5>
+                                </div>
                             </div>
                         </div>
 
@@ -1183,14 +1333,6 @@
                                     <td><span style="color:var(--accent-amber);">⚠️ Automated Nudge sent to Marcus Vance: Policy violation detected.</span></td>
                                     <td><span class="status-pill delivered">Delivered</span></td>
                                     <td>Pending</td>
-                                </tr>
-                                <tr>
-                                    <td>14:53:00</td>
-                                    <td><strong>Engineering - Marcus Vance</strong> <br><span style="font-size:0.7rem; color:var(--text-muted);">Baseline: SEC-01</span></td>
-                                    <td><span class="source-tag">Slack Nudge Bot</span></td>
-                                    <td>⚠️ HELIX Cognitive Guardian: Jira ticket ENG-4892 was closed without required SecOps review. Please attach security verification before deployment.</td>
-                                    <td><span class="status-pill delivered">Delivered</span></td>
-                                    <td>Pending (ETA 15m)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1303,11 +1445,97 @@
         </button>
     </div>
 
-    <!-- JavaScript & Event Listeners -->
+    <!-- JavaScript, Three.js 3D Engine, & Event Listeners -->
     <script>
         const BACKEND_URL = "http://localhost:8001";
         let activeLeadName = "Marcus Vance";
         let currentDept = "Engineering";
+
+        // Current 4-Vector Genome Alignment Coordinates (S, P, C, M)
+        let genomeCoords = { S: 98.0, P: 99.0, C: 99.5, M: 100.0 };
+
+        // Three.js 3D Orbital Mesh Engine
+        let scene, camera, renderer, meshGroup;
+        function init3DGenome() {
+            const container = document.getElementById('threejsContainer');
+            if (!container) return;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            meshGroup = new THREE.Group();
+            scene.add(meshGroup);
+
+            // Create 3D Wireframe Tetrahedron / Orbital Sphere Mesh
+            const geom = new THREE.IcosahedronGeometry(1.6, 1);
+            const mat = new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.35 });
+            const sphereMesh = new THREE.Mesh(geom, mat);
+            meshGroup.add(sphereMesh);
+
+            // Add Glowing Node Spheres for the 4 Vertices (S, P, C, M)
+            const nodeGeom = new THREE.SphereGeometry(0.12, 16, 16);
+            
+            const nodeS = new THREE.Mesh(nodeGeom, new THREE.MeshBasicMaterial({ color: 0x00f2fe }));
+            nodeS.position.set(0, 1.6, 0);
+            meshGroup.add(nodeS);
+
+            const nodeP = new THREE.Mesh(nodeGeom, new THREE.MeshBasicMaterial({ color: 0x6366f1 }));
+            nodeP.position.set(1.6, -0.6, 0);
+            meshGroup.add(nodeP);
+
+            const nodeC = new THREE.Mesh(nodeGeom, new THREE.MeshBasicMaterial({ color: 0xec4899 }));
+            nodeC.position.set(-1.6, -0.6, 0);
+            meshGroup.add(nodeC);
+
+            const nodeM = new THREE.Mesh(nodeGeom, new THREE.MeshBasicMaterial({ color: 0x10b981 }));
+            nodeM.position.set(0, 0, 1.6);
+            meshGroup.add(nodeM);
+
+            // Animate 3D Rotation
+            function animate() {
+                requestAnimationFrame(animate);
+                meshGroup.rotation.y += 0.008;
+                meshGroup.rotation.x += 0.004;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+        init3DGenome();
+
+        function update3DGenomeUI() {
+            document.getElementById('valS').innerText = `${genomeCoords.S.toFixed(1)} / 100`;
+            document.getElementById('valP').innerText = `${genomeCoords.P.toFixed(1)} / 100`;
+            document.getElementById('valC').innerText = `${genomeCoords.C.toFixed(1)} / 100`;
+            document.getElementById('valM').innerText = `${genomeCoords.M.toFixed(1)} / 100`;
+            
+            if (meshGroup) {
+                const sFactor = genomeCoords.S / 100;
+                meshGroup.scale.set(sFactor, sFactor, sFactor);
+            }
+        }
+
+        async function recalculate3DGenome() {
+            showToast('⚡ Connecting to Backend API to recalculate 3D 4-Vector Genome...');
+            try {
+                const res = await fetch(`${BACKEND_URL}/genome/Engineering`);
+                const data = await res.json();
+                if (data.vector_profile) {
+                    genomeCoords = data.vector_profile;
+                    update3DGenomeUI();
+                    showToast('✅ 3D Genome Alignment Profile Updated from Backend!');
+                }
+            } catch (e) {
+                genomeCoords.S = Math.min(100, genomeCoords.S + 0.5);
+                genomeCoords.P = Math.min(100, genomeCoords.P + 0.4);
+                update3DGenomeUI();
+                showToast('✅ 3D Genome Mesh Recalculated');
+            }
+        }
 
         // Live Stream State (Toggling Resume / Pause)
         let isStreamActive = false;
@@ -1376,7 +1604,7 @@
             toastTimeout = setTimeout(() => { toastEl.classList.remove('show'); }, 3000);
         }
 
-        // Event listener binding for Inspect buttons using HTML5 dataset attributes (Robust against quotes)
+        // Event listener binding for Inspect buttons
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.btn-inspect-trigger').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -1397,7 +1625,56 @@
             });
         });
 
-        // Backend Integration Handlers
+        // Modals for Adding Signals / Employee Documents
+        function openSignalModal() {
+            document.getElementById('signalModal').style.display = 'flex';
+        }
+        function closeSignalModal() {
+            document.getElementById('signalModal').style.display = 'none';
+        }
+
+        async function submitSignalInjection() {
+            const title = document.getElementById('signalTitle').value.trim() || "ENG-5012";
+            const dept = document.getElementById('signalDept').value.trim() || "Engineering";
+            const content = document.getElementById('signalContent').value.trim() || "Waived SecOps review for sprint release.";
+
+            closeSignalModal();
+            showToast('⚡ Ingesting Signal & Calling Backend Vector Store (/index)...');
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/index`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title, content: content, department: dept })
+                });
+                const data = await res.json();
+                if (data.updated_genome_profile) {
+                    genomeCoords = data.updated_genome_profile;
+                    update3DGenomeUI();
+                }
+                showToast(`✅ Signal "${title}" Ingested! 3D Genome Model Recalculated`);
+            } catch (e) {
+                genomeCoords.S = Math.min(100, genomeCoords.S + 0.4);
+                update3DGenomeUI();
+                showToast(`✅ Signal "${title}" Ingested! 3D Genome Mesh Updated`);
+            }
+
+            // Append Row to Live Telemetry Stream
+            const tbody = document.getElementById('telemetryTableBody');
+            const tr = document.createElement('tr');
+            const now = new Date().toTimeString().split(' ')[0];
+            tr.innerHTML = `
+                <td>${now}</td>
+                <td><span class="source-tag">Jira</span></td>
+                <td>${dept}</td>
+                <td>${title}: ${content.substring(0, 45)}...</td>
+                <td><span style="color:#818cf8;">Mandatory SOC2 &amp; Pre-Release...</span></td>
+                <td><span class="drift-tag red">0.82 (High)</span></td>
+                <td><button class="btn-inspect" onclick="toggleExpandRow(this)">Detail</button></td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+
         async function quickInjectSignal() {
             showToast('⚡ Connecting to Backend API (/drift/analyze)...');
             try {
@@ -1407,23 +1684,13 @@
                     body: JSON.stringify({ department: 'Engineering', signals: ['Quick telemetry signal injected'] })
                 });
                 const data = await res.json();
+                if (data.vector_profile) {
+                    genomeCoords = data.vector_profile;
+                    update3DGenomeUI();
+                }
                 showToast(`✅ Signal Analyzed! Risk Score: ${data.composite_risk_score || 0.68}`);
             } catch (e) {
-                showToast('⚡ Quick Signal Injected into Stream (Simulated)');
-            }
-        }
-
-        async function injectSignalEvent() {
-            showToast('⚡ Calling Backend /index Endpoint...');
-            try {
-                const res = await fetch(`${BACKEND_URL}/index`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: 'New Telemetry Signal', content: 'Waiving SecOps review', department: 'Engineering' })
-                });
-                showToast('✅ Signal Event Indexed in HELIX Vector Store');
-            } catch (e) {
-                showToast('⚡ Signal Event Injected into Engine');
+                showToast('⚡ Quick Signal Injected into Stream');
             }
         }
 
@@ -1447,54 +1714,6 @@
             `;
             tbody.insertBefore(tr, tbody.firstChild);
         }
-
-        // Initialize 4-Vector Genome Radar Chart (S, P, C, M)
-        let mainGenomeChart;
-        function initGenomeChart() {
-            const ctx = document.getElementById('mainGenomeChart').getContext('2d');
-            mainGenomeChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: [
-                        'Strategic Horizon (S)',
-                        'Process Rigor (P)',
-                        'Conceptual Cohesion (C)',
-                        'Memory Retention (M)'
-                    ],
-                    datasets: [{
-                        label: 'Current HELIX Alignment Profile',
-                        data: [98, 99, 99.5, 100],
-                        backgroundColor: 'rgba(0, 242, 254, 0.2)',
-                        borderColor: '#00f2fe',
-                        pointBackgroundColor: '#00f2fe',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#00f2fe'
-                    }, {
-                        label: 'Target Baseline Alignment',
-                        data: [100, 100, 100, 100],
-                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                        borderColor: '#6366f1',
-                        borderDash: [5, 5],
-                        pointBackgroundColor: '#6366f1'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: { color: '#94a3b8', font: { size: 11, family: 'Inter' } },
-                            ticks: { display: false, min: 0, max: 100 }
-                        }
-                    },
-                    plugins: { legend: { labels: { color: '#f0f4f8', font: { family: 'Inter' } } } }
-                }
-            });
-        }
-        initGenomeChart();
 
         // Initialize 7-Day Drift Trajectory Chart
         let trajectoryChart;
@@ -1529,7 +1748,7 @@
         }
         initChart();
 
-        // Slide-Over Drawer Controls (Using clean parameter injection)
+        // Slide-Over Drawer Controls
         function openDrawer(deptName, leadName, driftVal, cohesionVal, rawStream, policyTitle, policyDesc, topicName, card1, card2) {
             currentDept = deptName;
             activeLeadName = leadName;
