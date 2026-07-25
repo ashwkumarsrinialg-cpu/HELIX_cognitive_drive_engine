@@ -1,7 +1,8 @@
-import { ToolDecorator as Tool, ExecutionContext, z } from '@nitrostack/core';
+import { ToolDecorator as Tool, ExecutionContext, z, Injectable } from '@nitrostack/core';
 import { LLMService } from '../../services/llm.service.js';
 import { RAGService } from '../../services/rag.service.js';
 
+@Injectable()
 export class HelixTools {
   constructor(
     private llmService: LLMService,
