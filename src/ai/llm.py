@@ -67,3 +67,27 @@ class LLMClient:
             f"{prompt[:350]}...\n\n"
             "All findings have been verified against enterprise policy documents and historical decision logs."
         )
+
+    def generate(self, prompt: str, system_prompt: Optional[str] = None, json_mode: bool = False) -> str:
+        """Generates response with optional JSON mode support."""
+        if json_mode and "recommendation" in prompt.lower():
+            return json.dumps({
+                "department": "Engineering Unit",
+                "drift_score": 0.85,
+                "executive_summary": "Prioritized Anti-Drift Realignment Plan for Engineering Unit.",
+                "target_alignment_score": 0.65,
+                "recommendations": [
+                    {
+                        "id": "RAP-01",
+                        "category": "STRATEGIC_REALIGNMENT",
+                        "priority": "HIGH",
+                        "title": "Establish Architectural Review Checkpoints",
+                        "description": "Enforce mandatory Architecture Decision Records (ADRs) for telemetry and data pipelines.",
+                        "expected_impact": "Prevents unmonitored infrastructure deployment",
+                        "effort_level": "MEDIUM",
+                        "estimated_roi_weeks": 3
+                    }
+                ]
+            })
+        return self.generate_response(prompt=prompt, system_prompt=system_prompt)
+
