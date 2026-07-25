@@ -4,12 +4,21 @@ import {
   PromptDecorator as Prompt,
   Cache,
   RateLimit,
+  UseGuards,
+  UseInterceptors,
+  UseFilters,
+  UsePipes,
   ExecutionContext,
   z,
-  Injectable
+  Injectable,
+  emitEvent
 } from '@nitrostack/core';
 import { LLMService } from '../../services/llm.service.js';
 import { RAGService } from '../../services/rag.service.js';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TimingInterceptor } from '../../common/interceptors/timing.interceptor.js';
+import { HelixExceptionFilter } from '../../common/filters/helix-exception.filter.js';
+import { TrimPipe } from '../../common/pipes/trim.pipe.js';
 
 @Injectable()
 export class HelixTools {
@@ -26,8 +35,13 @@ export class HelixTools {
       department: z.string().optional().describe('Target enterprise department')
     })
   })
+  @UseGuards(AuthGuard)
+  @UseInterceptors(TimingInterceptor)
+  @UseFilters(HelixExceptionFilter)
+  @UsePipes(TrimPipe)
   async chat(input: { message: string; department?: string }, ctx: ExecutionContext) {
     const res = await this.ragService.askQuestion(input.message, input.department || 'Engineering');
+    emitEvent('helix.chat.invoked', { department: input.department || 'Engineering', timestamp: new Date().toISOString() });
     return {
       response: res.answer,
       confidence: res.confidence_score,
@@ -43,6 +57,10 @@ export class HelixTools {
       department: z.string().optional().describe('Department context')
     })
   })
+  @UseGuards(AuthGuard)
+  @UseInterceptors(TimingInterceptor)
+  @UseFilters(HelixExceptionFilter)
+  @UsePipes(TrimPipe)
   async askQuestion(input: { question: string; department?: string }, ctx: ExecutionContext) {
     const result = await this.ragService.askQuestion(input.question, input.department || 'Engineering');
     return result;
@@ -57,8 +75,12 @@ export class HelixTools {
     })
   })
   @Cache({ ttl: 30 })
+  @UseGuards(AuthGuard)
+  @UseInterceptors(TimingInterceptor)
+  @UseFilters(HelixExceptionFilter)
   async analyzeDrift(input: { department: string; signals: string[] }, ctx: ExecutionContext) {
     const result = await this.ragService.analyzeDrift(input.department, input.signals);
+    emitEvent('helix.drift.analyzed', { department: input.department, score: result.composite_risk_score });
     return result;
   }
 
@@ -72,7 +94,12 @@ export class HelixTools {
     })
   })
   @RateLimit({ requests: 10, window: '1m' })
+  @UseGuards(AuthGuard)
+  @UseInterceptors(TimingInterceptor)
+  @UseFilters(HelixExceptionFilter)
+  @UsePipes(TrimPipe)
   async injectSignal(input: { title: string; content: string; department: string }, ctx: ExecutionContext) {
+    emitEvent('helix.signal.injected', { title: input.title, department: input.department });
     return {
       status: 'SUCCESS',
       message: `Indexed signal '${input.title}' into vector store`,

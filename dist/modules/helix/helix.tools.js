@@ -7,9 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { ToolDecorator as Tool, ResourceDecorator as Resource, PromptDecorator as Prompt, Cache, RateLimit, z, Injectable } from '@nitrostack/core';
+import { ToolDecorator as Tool, ResourceDecorator as Resource, PromptDecorator as Prompt, Cache, RateLimit, UseGuards, UseInterceptors, UseFilters, UsePipes, z, Injectable, emitEvent } from '@nitrostack/core';
 import { LLMService } from '../../services/llm.service.js';
 import { RAGService } from '../../services/rag.service.js';
+import { AuthGuard } from '../../common/guards/auth.guard.js';
+import { TimingInterceptor } from '../../common/interceptors/timing.interceptor.js';
+import { HelixExceptionFilter } from '../../common/filters/helix-exception.filter.js';
+import { TrimPipe } from '../../common/pipes/trim.pipe.js';
 let HelixTools = class HelixTools {
     llmService;
     ragService;
@@ -19,6 +23,7 @@ let HelixTools = class HelixTools {
     }
     async chat(input, ctx) {
         const res = await this.ragService.askQuestion(input.message, input.department || 'Engineering');
+        emitEvent('helix.chat.invoked', { department: input.department || 'Engineering', timestamp: new Date().toISOString() });
         return {
             response: res.answer,
             confidence: res.confidence_score,
@@ -31,9 +36,11 @@ let HelixTools = class HelixTools {
     }
     async analyzeDrift(input, ctx) {
         const result = await this.ragService.analyzeDrift(input.department, input.signals);
+        emitEvent('helix.drift.analyzed', { department: input.department, score: result.composite_risk_score });
         return result;
     }
     async injectSignal(input, ctx) {
+        emitEvent('helix.signal.injected', { title: input.title, department: input.department });
         return {
             status: 'SUCCESS',
             message: `Indexed signal '${input.title}' into vector store`,
@@ -69,6 +76,10 @@ __decorate([
             department: z.string().optional().describe('Target enterprise department')
         })
     }),
+    UseGuards(AuthGuard),
+    UseInterceptors(TimingInterceptor),
+    UseFilters(HelixExceptionFilter),
+    UsePipes(TrimPipe),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
@@ -82,6 +93,10 @@ __decorate([
             department: z.string().optional().describe('Department context')
         })
     }),
+    UseGuards(AuthGuard),
+    UseInterceptors(TimingInterceptor),
+    UseFilters(HelixExceptionFilter),
+    UsePipes(TrimPipe),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
@@ -96,6 +111,9 @@ __decorate([
         })
     }),
     Cache({ ttl: 30 }),
+    UseGuards(AuthGuard),
+    UseInterceptors(TimingInterceptor),
+    UseFilters(HelixExceptionFilter),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
@@ -111,6 +129,10 @@ __decorate([
         })
     }),
     RateLimit({ requests: 10, window: '1m' }),
+    UseGuards(AuthGuard),
+    UseInterceptors(TimingInterceptor),
+    UseFilters(HelixExceptionFilter),
+    UsePipes(TrimPipe),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
