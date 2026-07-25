@@ -7,23 +7,18 @@ interface GenomeSpace3DProps {
   departments: DepartmentDrift[];
 }
 
-interface Point3D {
-  x: number;
-  y: number;
-  z: number;
-  label?: string;
-  color?: string;
-  size?: number;
-  id?: string;
-  type: 'node' | 'axis' | 'grid' | 'connector';
-  meta?: any;
+interface Edge3D {
+  sourceId: string;
+  targetId: string;
+  label: string;
+  traffic: 'low' | 'normal' | 'high';
 }
 
 export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => {
   // Navigation / Camera State
-  const [yaw, setYaw] = useState<number>(35); // horizontal angle in degrees
-  const [pitch, setPitch] = useState<number>(20); // vertical angle in degrees
-  const [zoom, setZoom] = useState<number>(1.1); // scale factor
+  const [yaw, setYaw] = useState<number>(45); // horizontal angle in degrees
+  const [pitch, setPitch] = useState<number>(25); // vertical angle in degrees
+  const [zoom, setZoom] = useState<number>(1.15); // scale factor
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
 
@@ -43,7 +38,7 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
     }
 
     const tick = () => {
-      setYaw((prev) => (prev + 0.3) % 360);
+      setYaw((prev) => (prev + 0.25) % 360);
       animationFrameId.current = requestAnimationFrame(tick);
     };
 
@@ -94,7 +89,7 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
     return departments.map((d) => {
       const base = baseMappings[d.id] || { s: 0.75, p: 0.75, c: 0.75, m: 0.75 };
       // Make coordinates reactive to live drift values!
-      const driftPenalty = d.driftScore * 0.15;
+      const driftPenalty = d.driftScore * 0.12;
       const s = Math.max(0.1, base.s - driftPenalty);
       const p = Math.max(0.1, base.p - driftPenalty);
       const c = d.cohesionIndex / 100;
@@ -110,6 +105,17 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
     });
   }, [departments]);
 
+  // Edges defining relationships and data pipelines
+  const edges: Edge3D[] = useMemo(() => [
+    { sourceId: 'dept-eng', targetId: 'dept-prod', label: 'Product Specs & Telemetry', traffic: 'high' },
+    { sourceId: 'dept-prod', targetId: 'dept-mkt', label: 'GTM Launches', traffic: 'normal' },
+    { sourceId: 'dept-mkt', targetId: 'dept-sales', label: 'Lead Funnel Sync', traffic: 'high' },
+    { sourceId: 'dept-sales', targetId: 'dept-leg', label: 'SLA & Pricing Audits', traffic: 'low' },
+    { sourceId: 'dept-leg', targetId: 'dept-eng', label: 'SOC2 & Policy Gates', traffic: 'low' },
+    { sourceId: 'dept-eng', targetId: 'dept-sales', label: 'Tech Capability Loop', traffic: 'normal' },
+    { sourceId: 'dept-prod', targetId: 'dept-leg', label: 'Regulatory Compliance', traffic: 'normal' },
+  ], []);
+
   const selectedDept = useMemo(() => {
     return genomeData.find((d) => d.id === selectedDeptId) || null;
   }, [genomeData, selectedDeptId]);
@@ -118,15 +124,15 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
   const handleNodeClick = (deptId: string) => {
     setSelectedDeptId(deptId);
     setAutoRotate(false);
-    // Animate zoom and angles towards target node
+    // Focus camera
     setZoom(1.6);
     setPitch(25);
   };
 
   const handleResetFocus = () => {
     setSelectedDeptId(null);
-    setZoom(1.1);
-    setPitch(20);
+    setZoom(1.15);
+    setPitch(25);
     setAutoRotate(true);
   };
 
@@ -141,154 +147,176 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
   const pitchRad = (pitch * Math.PI) / 180;
 
   const project = (x: number, y: number, z: number) => {
+    // Center inputs around (0.5, 0.5, 0.5) to balance around rotation center
+    const cx = (x - 0.6) * 2;
+    const cy = (y - 0.6) * 2;
+    const cz = (z - 0.6) * 2;
+
     // 1. Yaw rotation (around Y axis)
-    const x1 = x * Math.cos(yawRad) - z * Math.sin(yawRad);
-    const z1 = x * Math.sin(yawRad) + z * Math.cos(yawRad);
+    const x1 = cx * Math.cos(yawRad) - cz * Math.sin(yawRad);
+    const z1 = cx * Math.sin(yawRad) + cz * Math.cos(yawRad);
 
     // 2. Pitch rotation (around X axis)
-    const y2 = y * Math.cos(pitchRad) - z1 * Math.sin(pitchRad);
-    const z2 = y * Math.sin(pitchRad) + z1 * Math.cos(pitchRad);
+    const y2 = cy * Math.cos(pitchRad) - z1 * Math.sin(pitchRad);
+    const z2 = cy * Math.sin(pitchRad) + z1 * Math.cos(pitchRad);
 
     // Camera perspective projection
     const cameraDistance = 3.5;
     const scale = cameraDistance / (cameraDistance - z2);
 
-    // Magnification factor mapping [-1, 1] coordinates to screen space
-    const screenX = centerX + x1 * scale * 140 * zoom;
-    const screenY = centerY - y2 * scale * 140 * zoom; // inverted Y
+    // Magnification factor mapping coordinates to screen space
+    const screenX = centerX + x1 * scale * 100 * zoom;
+    const screenY = centerY - y2 * scale * 100 * zoom;
 
     return { x: screenX, y: screenY, zIndex: z2 };
   };
 
-  // Generate 3D grid lines and axes elements
+  // Generate 3D elements
   const renderElements = useMemo(() => {
     const list: any[] = [];
 
-    // Axis limits
-    const maxVal = 1.0;
+    // Subtle 3D Bounding Grid Box
+    const corners = [
+      [0.2, 0.2, 0.2], [1.0, 0.2, 0.2], [1.0, 1.0, 0.2], [0.2, 1.0, 0.2],
+      [0.2, 0.2, 1.0], [1.0, 0.2, 1.0], [1.0, 1.0, 1.0], [0.2, 1.0, 1.0]
+    ];
+    
+    // Draw wireframe box edges
+    const boxConnections = [
+      [0, 1], [1, 2], [2, 3], [3, 0], // back
+      [4, 5], [5, 6], [6, 7], [7, 4], // front
+      [0, 4], [1, 5], [2, 6], [3, 7]  // connectors
+    ];
 
-    // Draw Grid floor and back walls
-    const gridTicks = [0, 0.5, 1.0];
-
-    // Grid planes helper
-    const addGridLine = (p1: [number, number, number], p2: [number, number, number]) => {
-      const pt1 = project(...p1);
-      const pt2 = project(...p2);
-      const avgZ = (pt1.zIndex + pt2.zIndex) / 2;
+    boxConnections.forEach(([i1, i2], idx) => {
+      const pt1 = project(...(corners[i1] as [number, number, number]));
+      const pt2 = project(...(corners[i2] as [number, number, number]));
       list.push({
         type: 'grid',
-        avgZ,
+        avgZ: (pt1.zIndex + pt2.zIndex) / 2,
         render: () => (
           <line
-            key={`grid-${p1.join('-')}-${p2.join('-')}`}
+            key={`box-${idx}`}
             x1={pt1.x}
             y1={pt1.y}
             x2={pt2.x}
             y2={pt2.y}
-            stroke="rgba(255, 255, 255, 0.05)"
-            strokeWidth="1"
-            strokeDasharray="2 3"
+            stroke="rgba(255, 255, 255, 0.04)"
+            strokeWidth="0.8"
           />
         ),
       });
-    };
-
-    // Draw back walls & floor grids
-    gridTicks.forEach((t) => {
-      addGridLine([t, 0, 0], [t, 0, 1]);
-      addGridLine([0, 0, t], [1, 0, t]);
-
-      addGridLine([0, t, 0], [0, t, 1]);
-      addGridLine([0, 0, t], [0, 1, t]);
-
-      addGridLine([t, 0, 0], [t, 1, 0]);
-      addGridLine([0, t, 0], [1, t, 0]);
     });
 
-    // Draw main coordinate axes S, P, C starting from origin (0,0,0)
-    // S-Axis (Strategic Alignment - X-axis) -> colored Cyan
-    const sOrigin = project(0, 0, 0);
-    const sEnd = project(maxVal, 0, 0);
+    // S, P, C Axes lines starting from origin/center (0.2, 0.2, 0.2)
+    const oPt = project(0.2, 0.2, 0.2);
+    const sPt = project(1.1, 0.2, 0.2);
+    const pPt = project(0.2, 1.1, 0.2);
+    const cPt = project(0.2, 0.2, 1.1);
+
     list.push({
       type: 'axis',
-      avgZ: (sOrigin.zIndex + sEnd.zIndex) / 2,
+      avgZ: oPt.zIndex - 0.1,
       render: () => (
-        <g key="s-axis">
-          <line x1={sOrigin.x} y1={sOrigin.y} x2={sEnd.x} y2={sEnd.y} stroke="#06B6D4" strokeWidth="2.5" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px rgba(6, 182, 212, 0.5))' }} />
-          <text x={sEnd.x + 8} y={sEnd.y + 4} fill="#06B6D4" fontSize="10.5" fontWeight="bold">S (Align)</text>
+        <g key="axes">
+          {/* S axis */}
+          <line x1={oPt.x} y1={oPt.y} x2={sPt.x} y2={sPt.y} stroke="rgba(6, 182, 212, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <text x={sPt.x + 4} y={sPt.y + 4} fill="#06B6D4" fontSize="8" opacity="0.6">S (Align)</text>
+          
+          {/* P axis */}
+          <line x1={oPt.x} y1={oPt.y} x2={pPt.x} y2={pPt.y} stroke="rgba(245, 158, 11, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <text x={pPt.x - 4} y={pPt.y - 4} fill="#F59E0B" fontSize="8" opacity="0.6">P (Process)</text>
+          
+          {/* C axis */}
+          <line x1={oPt.x} y1={oPt.y} x2={cPt.x} y2={cPt.y} stroke="rgba(236, 72, 153, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <text x={cPt.x - 8} y={cPt.y + 8} fill="#EC4899" fontSize="8" opacity="0.6">C (Cohesion)</text>
         </g>
-      ),
+      )
     });
 
-    // P-Axis (Process Consistency - Y-axis) -> colored Amber
-    const pEnd = project(0, maxVal, 0);
-    list.push({
-      type: 'axis',
-      avgZ: (sOrigin.zIndex + pEnd.zIndex) / 2,
-      render: () => (
-        <g key="p-axis">
-          <line x1={sOrigin.x} y1={sOrigin.y} x2={pEnd.x} y2={pEnd.y} stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px rgba(245, 158, 11, 0.5))' }} />
-          <text x={pEnd.x - 12} y={pEnd.y - 8} fill="#F59E0B" fontSize="10.5" fontWeight="bold">P (Process)</text>
-        </g>
-      ),
+    // Render Graph Edges (Node Connections)
+    edges.forEach((edge, idx) => {
+      const sourceNode = genomeData.find((n) => n.id === edge.sourceId);
+      const targetNode = genomeData.find((n) => n.id === edge.targetId);
+
+      if (!sourceNode || !targetNode) return;
+
+      const pS = project(sourceNode.s, sourceNode.p, sourceNode.c);
+      const pT = project(targetNode.s, targetNode.p, targetNode.c);
+
+      // Edge status: Red/Amber if endpoints have high drift scores
+      const avgDrift = (sourceNode.driftScore + targetNode.driftScore) / 2;
+      let strokeColor = 'rgba(16, 185, 129, 0.35)'; // aligned green
+      let glowColor = 'rgba(16, 185, 129, 0.15)';
+      if (avgDrift > 0.5) {
+        strokeColor = 'rgba(239, 68, 68, 0.55)'; // severe red
+        glowColor = 'rgba(239, 68, 68, 0.25)';
+      } else if (avgDrift > 0.25) {
+        strokeColor = 'rgba(245, 158, 11, 0.5)'; // moderate amber
+        glowColor = 'rgba(245, 158, 11, 0.2)';
+      }
+
+      // Edge animation speed based on traffic
+      const speed = edge.traffic === 'high' ? '1.2s' : edge.traffic === 'low' ? '3.5s' : '2.2s';
+
+      const isSelectedEdge = selectedDeptId === edge.sourceId || selectedDeptId === edge.targetId;
+
+      list.push({
+        type: 'edge',
+        avgZ: (pS.zIndex + pT.zIndex) / 2,
+        render: () => (
+          <g key={`edge-${idx}`}>
+            {/* Glowing pipeline tube background */}
+            <line
+              x1={pS.x}
+              y1={pS.y}
+              x2={pT.x}
+              y2={pT.y}
+              stroke={isSelectedEdge ? strokeColor.replace('0.35', '0.6').replace('0.55', '0.8').replace('0.5', '0.8') : strokeColor}
+              strokeWidth={isSelectedEdge ? '4' : '2'}
+              strokeLinecap="round"
+              style={{ filter: `drop-shadow(0 0 3px ${glowColor})` }}
+            />
+            {/* Animated flowing data packets overlay */}
+            <line
+              x1={pS.x}
+              y1={pS.y}
+              x2={pT.x}
+              y2={pT.y}
+              stroke="#FFFFFF"
+              strokeWidth={isSelectedEdge ? '2' : '1.2'}
+              strokeDasharray="5, 10"
+              strokeLinecap="round"
+              style={{
+                animation: `flowLine ${speed} linear infinite`,
+                opacity: 0.85,
+              }}
+            />
+          </g>
+        ),
+      });
     });
 
-    // C-Axis (Conceptual Cohesion - Z-axis) -> colored Pink
-    const cEnd = project(0, 0, maxVal);
-    list.push({
-      type: 'axis',
-      avgZ: (sOrigin.zIndex + cEnd.zIndex) / 2,
-      render: () => (
-        <g key="c-axis">
-          <line x1={sOrigin.x} y1={sOrigin.y} x2={cEnd.x} y2={cEnd.y} stroke="#EC4899" strokeWidth="2.5" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px rgba(236, 72, 153, 0.5))' }} />
-          <text x={cEnd.x - 22} y={cEnd.y + 12} fill="#EC4899" fontSize="10.5" fontWeight="bold">C (Cohesion)</text>
-        </g>
-      ),
-    });
-
-    // Plot department nodes
+    // Render Graph Nodes (Departments)
     genomeData.forEach((dept) => {
       const pt = project(dept.s, dept.p, dept.c);
 
-      // Node color based on drift status
       let color = '#10B981'; // aligned
-      let glowColor = 'rgba(16, 185, 129, 0.4)';
       if (dept.status === 'severe') {
         color = '#EF4444';
-        glowColor = 'rgba(239, 68, 68, 0.5)';
       } else if (dept.status === 'moderate') {
         color = '#F59E0B';
-        glowColor = 'rgba(245, 158, 11, 0.5)';
       }
-
-      // Memory (M) governs base node size & scale
-      const baseNodeRadius = 9;
-      const nodeRadius = baseNodeRadius + (dept.m * 6); // size ranges from 9 to 15 based on memory
 
       const isSelected = dept.id === selectedDeptId;
 
-      // Add Connector line from origin to Node
-      list.push({
-        type: 'connector',
-        avgZ: (sOrigin.zIndex + pt.zIndex) / 2,
-        render: () => (
-          <line
-            key={`connector-${dept.id}`}
-            x1={sOrigin.x}
-            y1={sOrigin.y}
-            x2={pt.x}
-            y2={pt.y}
-            stroke={isSelected ? '#6366F1' : 'rgba(255,255,255,0.18)'}
-            strokeWidth={isSelected ? '2' : '1.2'}
-            strokeDasharray={isSelected ? 'none' : '3 3'}
-          />
-        ),
-      });
+      // Memory (M) governs base node size & scale
+      const baseNodeRadius = 10;
+      const nodeRadius = baseNodeRadius + (dept.m * 6); // size ranges from 10 to 16 based on memory
 
-      // Add actual 3D Node
       list.push({
         type: 'node',
-        avgZ: pt.zIndex,
+        avgZ: pt.zIndex + 0.05, // Render nodes slightly in front of their edges
         render: () => (
           <g
             key={`node-${dept.id}`}
@@ -302,14 +330,14 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
             <circle
               cx={pt.x}
               cy={pt.y}
-              r={nodeRadius + (isSelected ? 8 : 4)}
+              r={nodeRadius + (isSelected ? 9 : 5)}
               fill="none"
               stroke={color}
-              strokeWidth={isSelected ? '2.5' : '1.5'}
-              strokeOpacity={isSelected ? '0.9' : '0.4'}
+              strokeWidth={isSelected ? '3' : '1.5'}
+              strokeOpacity={isSelected ? '0.95' : '0.45'}
               style={{
-                filter: `drop-shadow(0 0 ${isSelected ? '8px' : '4px'} ${color})`,
-                animation: isSelected ? 'pulseGlow 1.5s infinite' : 'none',
+                filter: `drop-shadow(0 0 ${isSelected ? '10px' : '5px'} ${color})`,
+                animation: isSelected ? 'pulseGlow 1.4s infinite' : 'none',
               }}
             />
             {/* Main sphere */}
@@ -329,18 +357,17 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
               fill="rgba(255, 255, 255, 0.45)"
               filter="blur(0.5px)"
             />
-            {/* Label flag */}
-            <g transform={`translate(${pt.x + nodeRadius + 5}, ${pt.y - 4})`}>
-              {/* Label background card */}
+            {/* Department Label Flag */}
+            <g transform={`translate(${pt.x + nodeRadius + 5}, ${pt.y - 8})`}>
               <rect
-                width={70}
-                height={16}
-                rx={4}
-                fill="rgba(11, 15, 23, 0.85)"
-                stroke={isSelected ? '#6366F1' : 'rgba(255, 255, 255, 0.15)'}
+                width={74}
+                height={18}
+                rx={5}
+                fill="rgba(11, 15, 23, 0.88)"
+                stroke={isSelected ? '#6366F1' : 'rgba(255, 255, 255, 0.18)'}
                 strokeWidth="1"
               />
-              <text x={6} y={11} fill="#F3F4F6" fontSize="9.5" fontWeight={isSelected ? 'bold' : '500'}>
+              <text x={6} y={12} fill="#F3F4F6" fontSize="9.5" fontWeight={isSelected ? 'bold' : '600'}>
                 {dept.code} ({Math.round(dept.driftScore * 100)}%)
               </text>
             </g>
@@ -348,7 +375,7 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
             {/* Gradient definition for sphere depth */}
             <defs>
               <radialGradient id={`sphereGrad-${dept.id}`} cx="35%" cy="35%" r="65%">
-                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.2" />
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.25" />
                 <stop offset="45%" stopColor={color} />
                 <stop offset="100%" stopColor="#05070B" />
               </radialGradient>
@@ -360,10 +387,23 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
 
     // Sort by depth (zIndex desc) to render back elements first
     return list.sort((a, b) => b.avgZ - a.avgZ);
-  }, [yaw, pitch, zoom, genomeData, selectedDeptId]);
+  }, [yaw, pitch, zoom, genomeData, selectedDeptId, edges]);
 
   return (
     <div style={{ display: 'flex', gap: '20px', flexDirection: 'row', flexWrap: 'wrap', minHeight: '440px' }}>
+      {/* Dynamic keyframe CSS injected directly into DOM */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes flowLine {
+          to {
+            stroke-dashoffset: -30;
+          }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { transform: scale(1); opacity: 0.45; }
+          50% { transform: scale(1.06); opacity: 0.95; }
+        }
+      `}} />
+
       {/* Left Column: 3D Visualization */}
       <div
         className="glass-panel"
@@ -398,9 +438,9 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
         }}>
           <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span className="live-pulse" style={{ backgroundColor: '#6366F1' }} />
-            4-Vector Cognitive Vector Space
+            3D Cognitive Graph Network Constellation
           </h4>
-          <span style={{ fontSize: '10px', color: '#6B7280' }}>Drag to rotate • Scroll/slider to zoom</span>
+          <span style={{ fontSize: '10px', color: '#6B7280' }}>Drag to rotate network • Click node to focus & inspect graph</span>
         </div>
 
         {/* 3D SVG Render viewport */}
@@ -615,7 +655,7 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
               🪐
             </div>
             <div>
-              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#FFFFFF' }}>Interactive Genome Inspection</h4>
+              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#FFFFFF' }}>Interactive Network Inspection</h4>
               <p style={{ margin: '6px 0 0 0', fontSize: '11.5px', color: '#9CA3AF', lineHeight: '1.4' }}>
                 Select a floating department node in the 3D space to trigger high-resolution camera zoom and plot its 7-day cognitive drift history.
               </p>
