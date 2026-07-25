@@ -346,6 +346,7 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
             <GenomeStudio
               baselines={baselines}
               onAddBaseline={handleAddBaseline}
+              departments={departments}
             />
           )}
 
