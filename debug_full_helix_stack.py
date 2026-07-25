@@ -69,18 +69,18 @@ def main():
 
     # 2. Test Frontend HTTP Web Server (Port 3000)
     print("\n--- 2. Testing Frontend Web Application Server ---")
-    ok, status, body = check_endpoint("http://localhost:3000")
+    ok, status, body = check_endpoint("http://localhost:3000/helix-dashboard.html")
     if ok:
-        print("  [OK ✓] Frontend Dashboard Web Server is active on port 3000 (index.html)")
+        print("  [OK ✓] Frontend Dashboard Web Server is active on port 3000 (helix-dashboard.html)")
     else:
-        issues.append("Frontend Web Server on port 3000 is not responding.")
+        issues.append("Frontend Web Server on port 3000 (helix-dashboard.html) is not responding.")
         print("  [X] Frontend Web Server on port 3000 not detected. (Start via `python -m http.server 3000`)")
 
-    # 3. Check HTML Assets & JS Syntax in index.html
-    print("\n--- 3. Checking Frontend Asset & JS Integrity in index.html ---")
-    index_path = os.path.join(BASE_DIR, "index.html")
-    if os.path.exists(index_path):
-        with open(index_path, "r", encoding="utf-8") as f:
+    # 3. Check HTML Assets & JS Integrity in helix-dashboard.html
+    print("\n--- 3. Checking Frontend Asset & JS Integrity in helix-dashboard.html ---")
+    dash_path = os.path.join(BASE_DIR, "helix-dashboard.html")
+    if os.path.exists(dash_path):
+        with open(dash_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         checks = [
@@ -95,12 +95,12 @@ def main():
 
         for name, snippet in checks:
             if snippet in html_content:
-                print(f"  [OK ✓] {name} present in index.html")
+                print(f"  [OK ✓] {name} present in helix-dashboard.html")
             else:
-                issues.append(f"Missing {name} in index.html")
-                print(f"  [X] {name} MISSING in index.html")
+                issues.append(f"Missing {name} in helix-dashboard.html")
+                print(f"  [X] {name} MISSING in helix-dashboard.html")
     else:
-        issues.append("index.html file missing from root directory.")
+        issues.append("helix-dashboard.html file missing from root directory.")
 
     # 4. Check TypeScript MCP Server Build
     print("\n--- 4. Checking NitroStack MCP Server Build Bundle ---")
