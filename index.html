@@ -393,7 +393,7 @@
         .progress-bar-bg { height: 4px; background: #1e293b; border-radius: 2px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { height: 100%; background: var(--accent-purple); border-radius: 2px; }
 
-        /* 4-Vector Genome Chart Section (Requested Feature) */
+        /* 4-Vector Genome Chart Section */
         .genome-chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -844,7 +844,7 @@
                     </div>
                 </div>
 
-                <!-- Integrated 4-Vector Cognitive Genome Radar/Bar Chart Card (Requested Feature) -->
+                <!-- Integrated 4-Vector Cognitive Genome Radar Chart -->
                 <div class="genome-chart-card">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <h3 style="font-size:1.1rem; font-weight:700;"><i class="fa-solid fa-chart-radar" style="color:var(--accent-cyan); margin-right:8px;"></i> 4-Vector Cognitive Genome Alignment Profile (S, P, C, M)</h3>
@@ -885,7 +885,17 @@
                             </div>
                             <div class="dept-footer">
                                 <span class="dept-meta">6 alerts &bull; 72.4% cohesion</span>
-                                <button class="btn-inspect" onclick="openDrawer('Engineering', 'Marcus Vance (VP Eng)', '0.68', '72.4%', 'Ticket ENG-4892 marked as \"RESOLVED/DEPLOYED\". Comment from @m.vance: \"Waiving the SecOps code review for sprint release deadline. We will patch vulnerability in hotfix release next week.\"', 'SEC-01: Mandatory SOC2 & Pre-Release SecOps Gateways', 'Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment.', 'Bypassing SOC2 Security Audit to Hit Release Target')">Inspect &gt;</button>
+                                <button class="btn-inspect btn-inspect-trigger"
+                                        data-dept="Engineering"
+                                        data-lead="Marcus Vance (VP Eng)"
+                                        data-drift="0.68"
+                                        data-cohesion="72.4%"
+                                        data-raw='Ticket ENG-4892 marked as "RESOLVED/DEPLOYED". Comment from @m.vance: "Waiving the SecOps code review for sprint release deadline. We will patch vulnerability in hotfix release next week."'
+                                        data-policy-title="SEC-01: Mandatory SOC2 & Pre-Release SecOps Gateways"
+                                        data-policy-desc="Every code commit, architectural change, and infrastructure deployment must pass automated SecOps compliance inspection and receive formal security signoff before production deployment."
+                                        data-topic="Bypassing SOC2 Security Audit to Hit Release Target"
+                                        data-card1="Jira #ENG-4892: Bypassed SecOps mandatory security gateway signoff..."
+                                        data-card2="Slack #eng-release: Production hotfix deployed without security audit...">Inspect &gt;</button>
                             </div>
                         </div>
 
@@ -911,7 +921,17 @@
                             </div>
                             <div class="dept-footer">
                                 <span class="dept-meta">3 alerts &bull; 84.1% cohesion</span>
-                                <button class="btn-inspect" onclick="openDrawer('Product', 'Elena Rostova (Head of Product)', '0.38', '84.1%', 'PRD-102: Added unapproved real-time analytics module without review by Lead Software Architect.', 'ARCH-03: Unified API Gateway & Microservice Standard', 'All feature scope modifications exceeding 2 story points must pass Architecture Review Board signoff.', 'Unapproved Feature Scope Creep without Architecture Signoff')">Inspect &gt;</button>
+                                <button class="btn-inspect btn-inspect-trigger"
+                                        data-dept="Product"
+                                        data-lead="Elena Rostova (Head of Product)"
+                                        data-drift="0.38"
+                                        data-cohesion="84.1%"
+                                        data-raw='PRD-102: Added unapproved real-time analytics module without review by Lead Software Architect.'
+                                        data-policy-title="ARCH-03: Unified API Gateway & Microservice Standard"
+                                        data-policy-desc="All feature scope modifications exceeding 2 story points must pass Architecture Review Board signoff."
+                                        data-topic="Unapproved Feature Scope Creep without Architecture Signoff"
+                                        data-card1="PRD Sync: Added custom enterprise API endpoint specification..."
+                                        data-card2="Slack #product-strategy: Bypassed Architecture Board review...">Inspect &gt;</button>
                             </div>
                         </div>
 
@@ -937,7 +957,17 @@
                             </div>
                             <div class="dept-footer">
                                 <span class="dept-meta">4 alerts &bull; 81% cohesion</span>
-                                <button class="btn-inspect" onclick="openDrawer('Legal & Risk', 'David Chen (CLO)', '0.45', '81.0%', 'Confluence Page \"Standard MSA Template v4.2\" revised by @d.chen: \"Added clause 14.b waiving standard liability capping in favor of unlimited mutual indemnity for data loss.\"', 'LEG-01: Enterprise Liability Capping & IP Indemnity Baseline', 'Any alteration to standard limitation of liability clauses requires explicit General Counsel approval.', 'Custom IP Indemnity Clause Amendments in Enterprise MSAs')">Inspect &gt;</button>
+                                <button class="btn-inspect btn-inspect-trigger"
+                                        data-dept="Legal & Risk"
+                                        data-lead="David Chen (Chief Legal Officer)"
+                                        data-drift="0.45"
+                                        data-cohesion="81.0%"
+                                        data-raw='Confluence Page "Standard MSA Template v4.2" revised by @d.chen: "Added clause 14.b waiving standard liability capping in favor of unlimited mutual indemnity for data loss."'
+                                        data-policy-title="LEG-01: Enterprise Liability Capping & IP Indemnity Baseline"
+                                        data-policy-desc="Any alteration to standard limitation of liability clauses requires explicit General Counsel approval."
+                                        data-topic="Custom IP Indemnity Clause Amendments in Enterprise MSAs"
+                                        data-card1="MSA Spec Edit: Modified IP ownership indemnity clause for Tier-1 Customer..."
+                                        data-card2="#compliance: Data retention policy exception granted for EMEA vendor...">Inspect &gt;</button>
                             </div>
                         </div>
 
@@ -963,7 +993,17 @@
                             </div>
                             <div class="dept-footer">
                                 <span class="dept-meta">1 alert &bull; 92% cohesion</span>
-                                <button class="btn-inspect" onclick="openDrawer('Sales & Revenue', 'Sarah Jenkins (CRO)', '0.25', '92.0%', 'SLS-402: Offered 28% multi-year discount to strategic partner.', 'PRC-02: Commercial Pricing & Discounting Authorization Thresholds', 'Discounts exceeding 30% require VP Sales signoff.', 'Custom Enterprise Discount Negotiations')">Inspect &gt;</button>
+                                <button class="btn-inspect btn-inspect-trigger"
+                                        data-dept="Sales & Revenue"
+                                        data-lead="Sarah Jenkins (CRO)"
+                                        data-drift="0.25"
+                                        data-cohesion="92.0%"
+                                        data-raw='SLS-402: Offered 28% multi-year discount to strategic partner.'
+                                        data-policy-title="PRC-02: Commercial Pricing & Discounting Authorization Thresholds"
+                                        data-policy-desc="Discounts exceeding 30% require VP Sales signoff."
+                                        data-topic="Custom Enterprise Discount Negotiations"
+                                        data-card1="#deal-desk: Offering Enterprise Client Acme Corp 35% custom discount..."
+                                        data-card2="Slack #sales-ops: Pre-cleared 25% discount threshold for Q3 deals...">Inspect &gt;</button>
                             </div>
                         </div>
 
@@ -989,7 +1029,17 @@
                             </div>
                             <div class="dept-footer">
                                 <span class="dept-meta">0 alerts &bull; 96% cohesion</span>
-                                <button class="btn-inspect" onclick="openDrawer('Global Marketing', 'Amara Okafor (CMO)', '0.12', '96.0%', 'MKT-101: Updated landing page typography to Inter font family.', 'MKT-04: Verifiable Product Claims & External Communication', 'All public marketing collateral must adhere to brand design system tokens.', 'Brand Identity Guidelines')">Inspect &gt;</button>
+                                <button class="btn-inspect btn-inspect-trigger"
+                                        data-dept="Global Marketing"
+                                        data-lead="Amara Okafor (CMO)"
+                                        data-drift="0.12"
+                                        data-cohesion="96.0%"
+                                        data-raw='MKT-101: Updated landing page typography to Inter font family.'
+                                        data-policy-title="MKT-04: Verifiable Product Claims & External Communication"
+                                        data-policy-desc="All public marketing collateral must adhere to brand design system tokens."
+                                        data-topic="Brand Identity Guidelines"
+                                        data-card1="MKT Assets: Updated primary design tokens to Inter typography..."
+                                        data-card2="Press Release: Formatted product performance metrics benchmark...">Inspect &gt;</button>
                             </div>
                         </div>
                     </div>
@@ -1106,7 +1156,7 @@
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="kpi-card"><div class="kpi-header">24H TOTAL NUDGES</div><div class="kpi-val" id="totalNudgesVal">45 Dispatches</div></div>
+                    <div class="kpi-card"><div class="kpi-header">24H TOTAL NUDGES</div><div class="kpi-val">45 Dispatches</div></div>
                     <div class="kpi-card"><div class="kpi-header">INTERVENTION SUCCESS RATE</div><div class="kpi-val" style="color:var(--accent-green);">91.2% <span style="font-size:0.8rem; color:var(--text-muted);">(41 Actioned)</span></div></div>
                     <div class="kpi-card"><div class="kpi-header">MEAN RESOLUTION TIME</div><div class="kpi-val" style="color:var(--accent-purple);">1.4 Hours</div></div>
                     <div class="kpi-card"><div class="kpi-header">ACTIVE ESCALATIONS</div><div class="kpi-val" style="color:var(--accent-red);">1 Board Level</div></div>
@@ -1215,7 +1265,7 @@
             </div>
         </div>
 
-        <!-- Primary Behavioral Drift Topic & Flagged Telemetry Section (Screenshot #1) -->
+        <!-- Primary Behavioral Drift Topic & Flagged Telemetry Section -->
         <div class="behavioral-topic-box">
             <div class="behavioral-topic-label">PRIMARY BEHAVIORAL DRIFT TOPIC</div>
             <div class="behavioral-topic-title" id="drawerBehavioralTopic">Custom IP Indemnity Clause Amendments in Enterprise MSAs</div>
@@ -1253,7 +1303,7 @@
         </button>
     </div>
 
-    <!-- JavaScript & Backend Integration -->
+    <!-- JavaScript & Event Listeners -->
     <script>
         const BACKEND_URL = "http://localhost:8001";
         let activeLeadName = "Marcus Vance";
@@ -1325,6 +1375,27 @@
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => { toastEl.classList.remove('show'); }, 3000);
         }
+
+        // Event listener binding for Inspect buttons using HTML5 dataset attributes (Robust against quotes)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.btn-inspect-trigger').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const ds = e.currentTarget.dataset;
+                    openDrawer(
+                        ds.dept,
+                        ds.lead,
+                        ds.drift,
+                        ds.cohesion,
+                        ds.raw,
+                        ds.policyTitle,
+                        ds.policyDesc,
+                        ds.topic,
+                        ds.card1,
+                        ds.card2
+                    );
+                });
+            });
+        });
 
         // Backend Integration Handlers
         async function quickInjectSignal() {
@@ -1458,8 +1529,8 @@
         }
         initChart();
 
-        // Slide-Over Drawer Controls
-        function openDrawer(deptName, leadName, driftVal, cohesionVal, rawStream, policyTitle, policyDesc, topicName) {
+        // Slide-Over Drawer Controls (Using clean parameter injection)
+        function openDrawer(deptName, leadName, driftVal, cohesionVal, rawStream, policyTitle, policyDesc, topicName, card1, card2) {
             currentDept = deptName;
             activeLeadName = leadName;
 
@@ -1473,6 +1544,9 @@
             document.getElementById('drawerBehavioralTopic').innerText = topicName || "Custom IP Indemnity Clause Amendments in Enterprise MSAs";
             document.getElementById('drawerNudgeText').innerText = "Send Slack Nudge to " + leadName.split(' ')[0] + " " + leadName.split(' ')[1];
             document.getElementById('drawerAvatar').innerText = deptName.substring(0, 3).toUpperCase();
+
+            if (card1) document.getElementById('flaggedCardText1').innerText = card1;
+            if (card2) document.getElementById('flaggedCardText2').innerText = card2;
 
             // Update Trajectory Chart based on risk level
             const isHigh = parseFloat(driftVal) > 0.5;
