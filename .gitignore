@@ -65,3 +65,11 @@ __pycache__/
 
 # Dataset
 zna_dataset/
+
+# Local developer folder
+my-mcp-server/
+
+# Frontend dashboard build outputs
+helix-dashboard/node_modules/
+helix-dashboard/.next/
+helix-dashboard/out/
