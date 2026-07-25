@@ -1,5 +1,5 @@
 """
-HELIX Advanced Enterprise Cognitive Genome AI Package
+HELIX Enterprise Cognitive Genome AI Package
 """
 
 from .prompt import (
