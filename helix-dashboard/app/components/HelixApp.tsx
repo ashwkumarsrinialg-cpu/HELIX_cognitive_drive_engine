@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useWidgetSDK, useWidgetState } from '@nitrostack/widgets';
 import {
   INITIAL_DEPARTMENTS,
@@ -19,6 +20,7 @@ import { DepartmentDrawer } from './DepartmentDrawer';
 import { TelemetryStream } from './TelemetryStream';
 import { GenomeStudio } from './GenomeStudio';
 import { InterventionHub } from './InterventionHub';
+import { ChatBotUI } from './ChatBotUI';
 import { GenomeSpace3D } from './GenomeSpace3D';
 
 type ViewType = 'dashboard' | 'stream' | 'genome' | 'interventions';
@@ -45,6 +47,10 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
   const [baselines, setBaselines] = useState<StrategicBaseline[]>(INITIAL_BASELINES);
   const [interventions, setInterventions] = useState<InterventionLog[]>(INITIAL_INTERVENTIONS);
   const [inspectedDept, setInspectedDept] = useState<DepartmentDrift | null>(null);
+
+  const [showAlertsModal, setShowAlertsModal] = useState(false);
+  const [showRiskModal, setShowRiskModal] = useState(false);
+  const [showChatDrawer, setShowChatDrawer] = useState(false);
 
   const [toast, setToast] = useState<{ message: string; visible: boolean } | null>(null);
   const [ingestRate, setIngestRate] = useState(1412);
@@ -200,7 +206,23 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
   const avgCohesion = (departments.reduce((acc, d) => acc + d.cohesionIndex, 0) / departments.length).toFixed(1);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#0B0F17', color: '#F3F4F6', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: 'var(--bg-obsidian)', color: 'var(--text-primary)', overflow: 'hidden', position: 'relative' }}>
+      
+      {/* Background Animated Elements */}
+      <div className="cyber-grid" />
+      
+      {/* Horizontal Data Lines */}
+      <div className="data-line-x" style={{ top: '15%', animationDelay: '0s', animationDuration: '6s', opacity: 0.2 }}></div>
+      <div className="data-line-x" style={{ top: '35%', animationDelay: '1.5s', animationDuration: '4s', opacity: 0.3 }}></div>
+      <div className="data-line-x" style={{ top: '65%', animationDelay: '3s', animationDuration: '8s', opacity: 0.15 }}></div>
+      <div className="data-line-x" style={{ top: '85%', animationDelay: '0.5s', animationDuration: '5s', opacity: 0.4 }}></div>
+
+      {/* Vertical Data Lines */}
+      <div className="data-line-y" style={{ left: '10%', animationDelay: '0s', animationDuration: '7s', opacity: 0.2 }}></div>
+      <div className="data-line-y" style={{ left: '40%', animationDelay: '2.5s', animationDuration: '5s', opacity: 0.3 }}></div>
+      <div className="data-line-y" style={{ left: '75%', animationDelay: '1s', animationDuration: '9s', opacity: 0.15 }}></div>
+      <div className="data-line-y" style={{ left: '90%', animationDelay: '4s', animationDuration: '6s', opacity: 0.4 }}></div>
+
       {/* Sidebar Navigation */}
       <Sidebar
         currentView={currentView}
@@ -209,167 +231,247 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
         isStreaming={!!widgetState?.isStreaming}
         onToggleStreaming={() => setWidgetState({ ...widgetState, isStreaming: !widgetState?.isStreaming })}
         onSimulateEvent={handleSimulateSignal}
+        onToggleChat={() => setShowChatDrawer(!showChatDrawer)}
       />
+
+      {/* Helix AI Chatbot Left Drawer */}
+      <AnimatePresence>
+        {showChatDrawer && (
+          <motion.div
+            initial={{ x: '-100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '-100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: '260px', /* Right after the sidebar */
+              bottom: 0,
+              width: '400px',
+              backgroundColor: 'rgba(5, 5, 5, 0.95)',
+              borderRight: '1px solid rgba(37, 99, 235, 0.3)',
+              boxShadow: '20px 0 50px rgba(0,0,0,0.5)',
+              zIndex: 35,
+              backdropFilter: 'blur(20px)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <h3 className="glow-text" style={{ margin: 0, color: '#FFF', fontSize: '16px' }}>Helix AI Inspector</h3>
+              <button onClick={() => setShowChatDrawer(false)} style={{ background: 'none', border: 'none', color: '#A1A1AA', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <ChatBotUI />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Content Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
         {/* Top Header Bar */}
-        <header style={{
-          padding: '16px 28px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          backgroundColor: '#0E131F',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#9CA3AF' }}>Workspace:</span>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>Global Enterprise Genome</span>
+        <motion.header 
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          style={{
+            padding: '16px 28px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            backgroundColor: 'rgba(5, 5, 5, 0.6)',
+            backdropFilter: 'blur(12px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            zIndex: 30,
+            boxShadow: '0 4px 30px rgba(0, 229, 255, 0.05)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#A1A1AA', letterSpacing: '0.5px' }}>WORKSPACE:</span>
+            <span className="glow-text" style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF' }}>Global Enterprise Genome</span>
             <span style={{
               fontSize: '10px',
-              fontWeight: 600,
-              padding: '2px 6px',
-              borderRadius: '4px',
-              backgroundColor: 'rgba(16, 185, 129, 0.15)',
-              color: '#34D399',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              fontWeight: 700,
+              padding: '3px 8px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              color: '#10B981',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
             }}>
               Sync Active
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#9CA3AF' }}>
-              <span className="live-pulse" style={{ backgroundColor: '#10B981' }} />
-              <span>Telemetry Ingest: <strong style={{ color: '#E5E7EB' }}>{ingestRate.toLocaleString()} events/min</strong></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#A1A1AA', fontWeight: 500 }}>
+              <span className="live-pulse" style={{ backgroundColor: '#00E5FF' }} />
+              <span>Ingest: <strong className="glow-text" style={{ color: '#FFFFFF' }}>{ingestRate.toLocaleString()} events/min</strong></span>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)' }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleSimulateSignal}
               style={{
-                padding: '6px 12px',
-                borderRadius: '6px',
-                backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                border: '1px solid rgba(99, 102, 241, 0.3)',
-                color: '#A5B4FC',
-                fontSize: '11px',
-                fontWeight: 600,
+                padding: '6px 14px',
+                borderRadius: '8px',
+                background: 'linear-gradient(45deg, rgba(0, 229, 255, 0.2), rgba(255, 102, 51, 0.1))',
+                border: '1px solid rgba(0, 229, 255, 0.5)',
+                color: '#38BDF8',
+                fontSize: '12px',
+                fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
-              + Quick Inject Signal
-            </button>
+              + Inject Signal
+            </motion.button>
           </div>
-        </header>
+        </motion.header>
 
         {/* View Router Render Area */}
-        <main style={{ flex: 1, padding: '24px 28px', overflowY: 'auto' }}>
-          {currentView === 'dashboard' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {/* Executive Header Title */}
-              <div>
-                <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: '#FFFFFF' }}>
-                  Executive Drift Heatmap
-                </h1>
-                <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#9CA3AF' }}>
-                  Real-time cognitive drift monitoring across enterprise business units
-                </p>
-              </div>
+        <main style={{ flex: 1, padding: '28px', overflowY: 'auto', position: 'relative' }}>
+          <AnimatePresence mode="wait">
+            {currentView === 'dashboard' && (
+              <motion.div 
+                key="dashboard"
+                initial={{ opacity: 0, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, filter: 'blur(10px)' }}
+                transition={{ duration: 0.4 }}
+                style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}
+              >
+                {/* Executive Header Title */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h1 className="glow-text" style={{ margin: 0, fontSize: '26px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
+                    Executive Drift Heatmap
+                  </h1>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#A1A1AA', fontWeight: 500 }}>
+                    Real-time cognitive drift monitoring across enterprise business units
+                  </p>
+                </motion.div>
 
-              {/* Top Row Metric Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-                <MetricCard
-                  title="Organizational Cohesion"
-                  value={`${avgCohesion}%`}
-                  subtitle="Weighted cross-departmental alignment score"
-                  progressPercentage={parseFloat(avgCohesion)}
-                  statusColor="emerald"
-                  trendBadge={{ text: '↑ +2.1%', isPositive: true }}
-                />
+                {/* Top Row Metric Cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                  <MetricCard
+                    title="Organizational Cohesion"
+                    value={`${avgCohesion}%`}
+                    subtitle="Weighted cross-departmental alignment score"
+                    gaugeValue={parseFloat(avgCohesion)}
+                    statusColor="emerald"
+                    trendBadge={{ text: '↑ +2.1%', isPositive: true }}
+                    delay={0.3}
+                  />
 
-                <MetricCard
-                  title="Active Drift Alerts"
-                  value={`${departments.reduce((acc, d) => acc + d.activeAlertsCount, 0)} Alerts`}
-                  subtitle={`${severeAlertsCount} critical severe drift flags`}
-                  statusColor="rose"
-                  trendBadge={{ text: `${severeAlertsCount} Critical`, isPositive: false }}
-                />
+                  <MetricCard
+                    title="Active Drift Alerts"
+                    value={`${departments.reduce((acc, d) => acc + d.activeAlertsCount, 0)} Alerts`}
+                    subtitle={`${severeAlertsCount} critical severe drift flags`}
+                    statusColor="rose"
+                    sparklineData={departments.map(d => d.activeAlertsCount)}
+                    trendBadge={{ text: `${severeAlertsCount} Critical`, isPositive: false }}
+                    delay={0.4}
+                    onClick={() => setShowAlertsModal(true)}
+                  />
 
-                <MetricCard
-                  title="Highest Risk Unit"
-                  value={highestRiskDept?.name || 'N/A'}
-                  subtitle={`Current Drift Score: ${highestRiskDept?.driftScore.toFixed(2)}`}
-                  statusColor="rose"
-                  trendBadge={{ text: 'High Risk', isPositive: false }}
-                />
+                  <MetricCard
+                    title="Highest Risk Unit"
+                    value={highestRiskDept?.name || 'N/A'}
+                    subtitle={`Current Drift Score: ${highestRiskDept?.driftScore.toFixed(2)}`}
+                    statusColor="rose"
+                    sparklineData={highestRiskDept?.trendHistory || []}
+                    trendBadge={{ text: 'High Risk', isPositive: false }}
+                    delay={0.5}
+                    onClick={() => setShowRiskModal(true)}
+                  />
 
-                <MetricCard
-                  title="24h Intervention Success"
-                  value="91.2%"
-                  subtitle="41 of 45 automated nudges actioned"
-                  progressPercentage={91.2}
-                  statusColor="indigo"
-                  trendBadge={{ text: 'Optimal', isPositive: true }}
-                />
-              </div>
-
-              {/* Main Section: Heatmap & 3D Genome Space */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '24px', alignItems: 'flex-start' }}>
-                {/* Heatmap Matrix column */}
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
-                      Departmental Behavioral Drift Matrix
-                    </h3>
-                    <span style={{ fontSize: '11px', color: '#6B7280' }}>
-                      Click "Inspect" on any tile for deep telemetry trajectory
-                    </span>
-                  </div>
-
-                  <HeatmapMatrix
-                    departments={departments}
-                    onInspectDepartment={handleInspectDepartment}
+                  <MetricCard
+                    title="24h Intervention Success"
+                    value="91.2%"
+                    subtitle="41 of 45 automated nudges actioned"
+                    statusColor="indigo"
+                    sparklineData={[60, 65, 75, 80, 85, 88, 91.2]}
+                    trendBadge={{ text: 'Optimal', isPositive: true }}
+                    delay={0.6}
                   />
                 </div>
 
-                {/* 3D Genome Space column */}
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
-                      3D Interactive Cognitive Genome Space (S, P, C, M)
-                    </h3>
+                {/* Main Section: Heatmap & 3D Genome Space */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.6 }}
+                  style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '28px', alignItems: 'flex-start' }}
+                >
+                  {/* Heatmap Matrix column */}
+                  <div className="glass-panel" style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                      <h3 className="glow-text" style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FFFFFF' }}>
+                        Behavioral Drift Matrix
+                      </h3>
+                      <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 500, backgroundColor: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: '12px' }}>
+                        Click tile to inspect trajectory
+                      </span>
+                    </div>
+
+                    <HeatmapMatrix
+                      departments={departments}
+                      onInspectDepartment={handleInspectDepartment}
+                    />
                   </div>
 
-                  <GenomeSpace3D departments={departments} />
-                </div>
-              </div>
-            </div>
-          )}
+                  {/* Right Column: 3D Genome */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                    
+                    {/* 3D Genome Space */}
+                    <div className="glass-panel" style={{ padding: '24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                        <h3 className="glow-text" style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FFFFFF' }}>
+                          Interactive Genome Space
+                        </h3>
+                      </div>
+                      <GenomeSpace3D departments={departments} />
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
 
-          {currentView === 'stream' && (
-            <TelemetryStream
-              signals={signals}
-              isStreaming={!!widgetState?.isStreaming}
-              onToggleStreaming={() => setWidgetState({ ...widgetState, isStreaming: !widgetState?.isStreaming })}
-              onSimulateSignal={handleSimulateSignal}
-              onTriggerNudge={handleTriggerNudge}
-              onShowToast={showToast}
-            />
-          )}
+            {currentView === 'stream' && (
+              <motion.div key="stream" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <TelemetryStream
+                  signals={signals}
+                  isStreaming={!!widgetState?.isStreaming}
+                  onToggleStreaming={() => setWidgetState({ ...widgetState, isStreaming: !widgetState?.isStreaming })}
+                  onSimulateSignal={handleSimulateSignal}
+                  onTriggerNudge={handleTriggerNudge}
+                  onShowToast={showToast}
+                />
+              </motion.div>
+            )}
 
-          {currentView === 'genome' && (
-            <GenomeStudio
-              baselines={baselines}
-              onAddBaseline={handleAddBaseline}
-            />
-          )}
+            {currentView === 'genome' && (
+              <motion.div key="genome" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <GenomeStudio
+                  baselines={baselines}
+                  onAddBaseline={handleAddBaseline}
+                />
+              </motion.div>
+            )}
 
-          {currentView === 'interventions' && (
-            <InterventionHub
-              interventions={interventions}
-              onDispatchNudge={handleTriggerNudge}
-            />
-          )}
+            {currentView === 'interventions' && (
+              <motion.div key="interventions" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <InterventionHub
+                  interventions={interventions}
+                  onDispatchNudge={handleTriggerNudge}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       </div>
 
@@ -386,26 +488,97 @@ export default function HelixApp({ initialView = 'dashboard' }: { initialView?: 
         onShowToast={showToast}
       />
 
+      {/* Alerts Modal */}
+      <AnimatePresence>
+        {showAlertsModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(2, 5, 18, 0.8)', backdropFilter: 'blur(10px)',
+            zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <div className="glass-card" style={{ width: '600px', maxHeight: '80vh', overflowY: 'auto', padding: '24px', borderRadius: '16px', border: '1px solid rgba(239, 68, 68, 0.3)', boxShadow: '0 0 40px rgba(239, 68, 68, 0.2)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 className="glow-text" style={{ margin: 0, color: '#FFF', fontSize: '20px' }}>Active Drift Alerts (14)</h3>
+                <button onClick={() => setShowAlertsModal(false)} style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', fontSize: '20px' }}>✕</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {signals.slice(0, 14).map((sig, i) => (
+                  <div key={sig.id} style={{
+                    padding: '12px',
+                    borderRadius: '8px',
+                    backgroundColor: sig.severity === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255,255,255,0.05)',
+                    border: sig.severity === 'High' ? '1px solid rgba(239, 68, 68, 0.5)' : '1px solid rgba(255,255,255,0.1)',
+                  }}>
+                    <strong style={{ color: sig.severity === 'High' ? '#F87171' : '#FFF' }}>{sig.timestamp} - {sig.department}</strong>
+                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#A1A1AA' }}>{sig.payloadPreview}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Engineering Risk Modal */}
+      <AnimatePresence>
+        {showRiskModal && highestRiskDept && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(2, 5, 18, 0.8)', backdropFilter: 'blur(10px)',
+            zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <div className="glass-card" style={{ width: '500px', padding: '24px', borderRadius: '16px', border: '1px solid rgba(239, 68, 68, 0.3)', boxShadow: '0 0 40px rgba(239, 68, 68, 0.2)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 className="glow-text" style={{ margin: 0, color: '#FFF', fontSize: '20px' }}>{highestRiskDept.name} Risk Profile</h3>
+                <button onClick={() => setShowRiskModal(false)} style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', fontSize: '20px' }}>✕</button>
+              </div>
+              <p style={{ color: '#E5E7EB', fontSize: '14px', lineHeight: '1.6' }}>
+                <strong>Top Drift Reason:</strong> {highestRiskDept.topDriftTopic}<br/><br/>
+                <strong>Latest Assessment:</strong> {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}
+              </p>
+              <div style={{ marginTop: '20px', padding: '16px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
+                <h4 style={{ margin: '0 0 10px', color: '#A1A1AA', fontSize: '12px', textTransform: 'uppercase' }}>7-Day Historical Drift Values</h4>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', height: '120px' }}>
+                  {highestRiskDept.trendHistory.map((val, i) => (
+                    <div key={i} style={{ flex: 1, backgroundColor: 'rgba(239,68,68,0.5)', height: `${val * 100}%`, borderRadius: '4px 4px 0 0', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '4px' }}>
+                      <span style={{ fontSize: '10px', color: '#FFF' }}>{val.toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Toast Notification */}
-      {toast && toast.visible && (
-        <div style={{
-          position: 'fixed',
-          top: '24px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          backgroundColor: '#0F172A',
-          border: '1px solid #10B981',
-          borderRadius: '8px',
-          padding: '12px 24px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(16, 185, 129, 0.25)',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-        }}>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>{toast.message}</span>
-        </div>
-      )}
+      <AnimatePresence>
+        {toast && toast.visible && (
+          <motion.div 
+            initial={{ opacity: 0, y: -50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -50, x: '-50%' }}
+            style={{
+              position: 'fixed',
+              top: '24px',
+              left: '50%',
+              backgroundColor: 'rgba(15, 15, 15, 0.9)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(0, 229, 255, 0.5)',
+              borderRadius: '12px',
+              padding: '14px 28px',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 229, 255, 0.4)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}
+          >
+            <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#00E5FF', boxShadow: '0 0 15px #00E5FF' }} />
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF', letterSpacing: '0.5px' }}>{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

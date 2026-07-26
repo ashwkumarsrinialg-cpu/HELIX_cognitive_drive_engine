@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
+import { LayoutDashboard, Activity, Dna, Siren, Zap, MessageSquare } from 'lucide-react';
 
 interface SidebarProps {
   currentView: 'dashboard' | 'stream' | 'genome' | 'interventions';
@@ -9,6 +11,7 @@ interface SidebarProps {
   isStreaming: boolean;
   onToggleStreaming: () => void;
   onSimulateEvent: () => void;
+  onToggleChat: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -18,132 +21,120 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isStreaming,
   onToggleStreaming,
   onSimulateEvent,
+  onToggleChat,
 }) => {
   const navItems = [
     {
       id: 'dashboard',
       label: 'Executive Heatmap',
-      path: '/dashboard',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-        </svg>
-      ),
+      icon: <LayoutDashboard size={18} />,
       badge: null,
     },
     {
       id: 'stream',
       label: 'Live Telemetry Stream',
-      path: '/stream',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-        </svg>
-      ),
+      icon: <Activity size={18} />,
       badge: isStreaming ? 'LIVE' : 'PAUSED',
-      badgeColor: isStreaming ? '#10B981' : '#F59E0B',
+      badgeColor: isStreaming ? '#00E5FF' : '#3B82F6',
     },
     {
       id: 'genome',
       label: 'Genome Management',
-      path: '/genome',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 15c6.667-6 13.333 0 20-6" />
-          <path d="M2 9c6.667 6 13.333 0 20 6" />
-          <line x1="12" y1="3" x2="12" y2="21" />
-        </svg>
-      ),
+      icon: <Dna size={18} />,
       badge: '5 OKRs',
     },
     {
       id: 'interventions',
       label: 'Nudge & Interventions',
-      path: '/interventions',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
-      ),
+      icon: <Siren size={18} />,
       badge: activeAlertsCount > 0 ? `${activeAlertsCount} Alert${activeAlertsCount > 1 ? 's' : ''}` : null,
       badgeColor: '#EF4444',
     },
   ];
 
   return (
-    <aside style={{
-      width: '260px',
-      minWidth: '260px',
-      backgroundColor: '#0E131F',
-      borderRight: '1px solid rgba(255, 255, 255, 0.08)',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      position: 'sticky',
-      top: 0,
-      zIndex: 40,
-      userSelect: 'none',
-    }}>
+    <motion.aside 
+      initial={{ x: -260, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      style={{
+        width: '260px',
+        minWidth: '260px',
+        backgroundColor: '#050505',
+        borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        userSelect: 'none',
+      }}
+    >
       {/* Brand Header */}
       <div style={{
-        padding: '20px 18px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        padding: '24px 20px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
       }}>
-        <div style={{
-          width: '38px',
-          height: '38px',
-          borderRadius: '10px',
-          background: 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 16px rgba(99, 102, 241, 0.4)',
-        }}>
+        <motion.div 
+          whileHover={{ scale: 1.05, rotate: 90 }}
+          transition={{ type: "spring", stiffness: 200, damping: 10 }}
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #00E5FF 0%, #38BDF8 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)',
+          }}
+        >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 3a9 9 0 0 1 6.36 15.36" />
             <path d="M12 3a9 9 0 0 0-6.36 15.36" />
             <circle cx="12" cy="12" r="3" fill="#FFFFFF" />
           </svg>
-        </div>
+        </motion.div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '0.5px', color: '#FFFFFF' }}>HELIX</span>
+            <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '1px', color: '#FFFFFF' }}>HELIX</span>
             <span style={{
               fontSize: '9px',
-              fontWeight: 600,
+              fontWeight: 700,
               padding: '2px 5px',
               borderRadius: '4px',
-              backgroundColor: 'rgba(99, 102, 241, 0.2)',
-              color: '#818CF8',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
-            }}>v2.4</span>
+              backgroundColor: 'rgba(0, 229, 255, 0.15)',
+              color: '#38BDF8',
+              border: '1px solid rgba(0, 229, 255, 0.3)',
+            }}>AI</span>
           </div>
-          <p style={{ margin: 0, fontSize: '11px', color: '#9CA3AF', fontWeight: 400 }}>Cognitive Genome Platform</p>
+          <p style={{ margin: 0, fontSize: '11px', color: '#A1A1AA', fontWeight: 500 }}>RedSun Intelligence</p>
         </div>
       </div>
 
       {/* Live Stream Telemetry Indicator */}
-      <div style={{
-        margin: '14px 16px 6px 16px',
-        padding: '10px 12px',
-        borderRadius: '8px',
-        backgroundColor: 'rgba(22, 27, 38, 0.9)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
+      <motion.div 
+        whileHover={{ scale: 1.02 }}
+        style={{
+          margin: '16px 16px 8px 16px',
+          padding: '12px 14px',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(15, 15, 15, 0.6)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="live-pulse" style={{ backgroundColor: isStreaming ? '#10B981' : '#F59E0B' }} />
-          <span style={{ fontSize: '11px', fontWeight: 600, color: '#D1D5DB' }}>
+          <span className="live-pulse" style={{ backgroundColor: isStreaming ? '#00E5FF' : '#3B82F6' }} />
+          <span style={{ fontSize: '11px', fontWeight: 600, color: '#FFFFFF' }}>
             {isStreaming ? 'Telemetry Active' : 'Stream Paused'}
           </span>
         </div>
@@ -152,49 +143,57 @@ export const Sidebar: React.FC<SidebarProps> = ({
           style={{
             background: 'none',
             border: 'none',
-            color: '#818CF8',
+            color: '#38BDF8',
             fontSize: '11px',
-            fontWeight: 500,
+            fontWeight: 600,
             cursor: 'pointer',
-            padding: '2px 6px',
+            padding: '4px 8px',
             borderRadius: '4px',
+            transition: 'background 0.2s',
           }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 229, 255, 0.1)'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
         >
           {isStreaming ? 'Pause' : 'Resume'}
         </button>
-      </div>
+      </motion.div>
 
       {/* Navigation Menu */}
       <div style={{ padding: '12px 10px', flex: 1 }}>
-        <div style={{ fontSize: '10px', fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.8px', padding: '4px 10px 8px 10px' }}>
-          Navigation
+        <div style={{ fontSize: '10px', fontWeight: 700, color: '#52525B', textTransform: 'uppercase', letterSpacing: '1px', padding: '4px 10px 12px 10px' }}>
+          Menu
         </div>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {navItems.map((item) => {
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {navItems.map((item, i) => {
             const isActive = currentView === item.id;
             return (
-              <button
+              <motion.button
                 key={item.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 + 0.3 }}
                 onClick={() => onNavigate(item.id as any)}
+                whileHover={{ scale: 1.02, backgroundColor: isActive ? 'rgba(0, 229, 255, 0.15)' : 'rgba(255, 255, 255, 0.03)' }}
+                whileTap={{ scale: 0.98 }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  border: isActive ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                  backgroundColor: isActive ? 'rgba(99, 102, 241, 0.12)' : 'transparent',
-                  color: isActive ? '#FFFFFF' : '#9CA3AF',
-                  fontWeight: isActive ? 600 : 400,
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: isActive ? '1px solid rgba(0, 229, 255, 0.3)' : '1px solid transparent',
+                  backgroundColor: isActive ? 'rgba(0, 229, 255, 0.1)' : 'transparent',
+                  color: isActive ? '#FFFFFF' : '#A1A1AA',
+                  fontWeight: isActive ? 600 : 500,
                   fontSize: '13px',
                   cursor: 'pointer',
                   textAlign: 'left',
-                  transition: 'all 0.15s ease',
+                  boxShadow: isActive ? '0 0 15px rgba(0, 229, 255, 0.1)' : 'none',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: isActive ? '#818CF8' : '#6B7280' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ color: isActive ? '#38BDF8' : '#52525B' }}>
                     {item.icon}
                   </span>
                   <span>{item.label}</span>
@@ -202,83 +201,114 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {item.badge && (
                   <span style={{
                     fontSize: '10px',
-                    fontWeight: 600,
-                    padding: '2px 6px',
-                    borderRadius: '10px',
-                    backgroundColor: item.badgeColor ? `${item.badgeColor}22` : 'rgba(255, 255, 255, 0.08)',
-                    color: item.badgeColor || '#9CA3AF',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '12px',
+                    backgroundColor: item.badgeColor ? `${item.badgeColor}22` : 'rgba(255, 255, 255, 0.05)',
+                    color: item.badgeColor || '#A1A1AA',
                     border: `1px solid ${item.badgeColor ? `${item.badgeColor}44` : 'transparent'}`,
                   }}>
                     {item.badge}
                   </span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </nav>
+        
+        <div style={{ fontSize: '10px', fontWeight: 700, color: '#52525B', textTransform: 'uppercase', letterSpacing: '1px', padding: '24px 10px 12px 10px' }}>
+          AI Tools
+        </div>
+        <motion.button
+          onClick={onToggleChat}
+          whileHover={{ scale: 1.02, backgroundColor: 'rgba(37, 99, 235, 0.15)' }}
+          whileTap={{ scale: 0.98 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            padding: '12px 14px',
+            borderRadius: '10px',
+            border: '1px solid rgba(37, 99, 235, 0.3)',
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            color: '#FFFFFF',
+            fontWeight: 600,
+            fontSize: '13px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxShadow: '0 0 15px rgba(37, 99, 235, 0.1)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ color: '#60A5FA' }}>
+              <MessageSquare size={18} />
+            </span>
+            <span>Helix AI Inspector</span>
+          </div>
+        </motion.button>
       </div>
 
       {/* Simulator Quick Trigger Action */}
-      <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-        <button
+      <div style={{ padding: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.03)' }}>
+        <motion.button
+          whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(0, 229, 255, 0.3)' }}
+          whileTap={{ scale: 0.98 }}
           onClick={onSimulateEvent}
           style={{
             width: '100%',
-            padding: '9px 12px',
-            borderRadius: '8px',
-            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(67, 56, 202, 0.2) 100%)',
-            border: '1px solid rgba(99, 102, 241, 0.4)',
-            color: '#A5B4FC',
-            fontSize: '12px',
-            fontWeight: 600,
+            padding: '12px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(255, 102, 51, 0.1) 100%)',
+            border: '1px solid rgba(0, 229, 255, 0.4)',
+            color: '#38BDF8',
+            fontSize: '13px',
+            fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
-            transition: 'all 0.2s ease',
+            gap: '10px',
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-          </svg>
+          <Zap size={16} />
           Inject Signal Event
-        </button>
+        </motion.button>
       </div>
 
       {/* Footer Info */}
       <div style={{
-        padding: '14px 16px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-        backgroundColor: '#090D15',
+        padding: '16px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.03)',
+        backgroundColor: '#030303',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
+        gap: '12px',
       }}>
         <div style={{
-          width: '30px',
-          height: '30px',
+          width: '32px',
+          height: '32px',
           borderRadius: '50%',
-          backgroundColor: '#1E293B',
-          border: '1px solid #334155',
+          backgroundColor: '#111',
+          border: '1px solid #222',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: '12px',
-          fontWeight: 700,
-          color: '#818CF8',
+          fontWeight: 800,
+          color: '#38BDF8',
         }}>
           CX
         </div>
         <div style={{ flex: 1, overflow: 'hidden' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#E5E7EB', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
             Executive Operations
           </div>
-          <div style={{ fontSize: '10px', color: '#6B7280' }}>
+          <div style={{ fontSize: '11px', color: '#52525B', fontWeight: 500 }}>
             Enterprise Tenant #8402
           </div>
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 };

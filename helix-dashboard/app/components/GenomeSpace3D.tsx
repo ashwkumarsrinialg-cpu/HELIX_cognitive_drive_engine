@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DepartmentDrift } from '../data/mockData';
+import { X, Orbit } from 'lucide-react';
 
 interface GenomeSpace3DProps {
   departments: DepartmentDrift[];
@@ -220,15 +222,15 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
       render: () => (
         <g key="axes">
           {/* S axis */}
-          <line x1={oPt.x} y1={oPt.y} x2={sPt.x} y2={sPt.y} stroke="rgba(6, 182, 212, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" />
-          <text x={sPt.x + 4} y={sPt.y + 4} fill="#06B6D4" fontSize="8" opacity="0.6">S (Align)</text>
+          <line x1={oPt.x} y1={oPt.y} x2={sPt.x} y2={sPt.y} stroke="rgba(0, 229, 255, 0.2)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <text x={sPt.x + 4} y={sPt.y + 4} fill="#00E5FF" fontSize="8" opacity="0.6">S (Align)</text>
           
           {/* P axis */}
-          <line x1={oPt.x} y1={oPt.y} x2={pPt.x} y2={pPt.y} stroke="rgba(245, 158, 11, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" />
-          <text x={pPt.x - 4} y={pPt.y - 4} fill="#F59E0B" fontSize="8" opacity="0.6">P (Process)</text>
+          <line x1={oPt.x} y1={oPt.y} x2={pPt.x} y2={pPt.y} stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <text x={pPt.x - 4} y={pPt.y - 4} fill="#3B82F6" fontSize="8" opacity="0.6">P (Process)</text>
           
           {/* C axis */}
-          <line x1={oPt.x} y1={oPt.y} x2={cPt.x} y2={cPt.y} stroke="rgba(236, 72, 153, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <line x1={oPt.x} y1={oPt.y} x2={cPt.x} y2={cPt.y} stroke="rgba(236, 72, 153, 0.2)" strokeWidth="1.5" strokeDasharray="3 3" />
           <text x={cPt.x - 8} y={cPt.y + 8} fill="#EC4899" fontSize="8" opacity="0.6">C (Cohesion)</text>
         </g>
       )
@@ -246,14 +248,14 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
 
       // Edge status: Red/Amber if endpoints have high drift scores
       const avgDrift = (sourceNode.driftScore + targetNode.driftScore) / 2;
-      let strokeColor = 'rgba(16, 185, 129, 0.35)'; // aligned green
-      let glowColor = 'rgba(16, 185, 129, 0.15)';
+      let strokeColor = 'rgba(16, 185, 129, 0.25)'; // aligned green
+      let glowColor = 'rgba(16, 185, 129, 0.1)';
       if (avgDrift > 0.5) {
-        strokeColor = 'rgba(239, 68, 68, 0.55)'; // severe red
-        glowColor = 'rgba(239, 68, 68, 0.25)';
+        strokeColor = 'rgba(0, 229, 255, 0.45)'; // severe red
+        glowColor = 'rgba(0, 229, 255, 0.2)';
       } else if (avgDrift > 0.25) {
-        strokeColor = 'rgba(245, 158, 11, 0.5)'; // moderate amber
-        glowColor = 'rgba(245, 158, 11, 0.2)';
+        strokeColor = 'rgba(59, 130, 246, 0.4)'; // moderate amber
+        glowColor = 'rgba(59, 130, 246, 0.15)';
       }
 
       // Edge animation speed based on traffic
@@ -272,7 +274,7 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
               y1={pS.y}
               x2={pT.x}
               y2={pT.y}
-              stroke={isSelectedEdge ? strokeColor.replace('0.35', '0.6').replace('0.55', '0.8').replace('0.5', '0.8') : strokeColor}
+              stroke={isSelectedEdge ? strokeColor.replace('0.25', '0.6').replace('0.45', '0.8').replace('0.4', '0.8') : strokeColor}
               strokeWidth={isSelectedEdge ? '4' : '2'}
               strokeLinecap="round"
               style={{ filter: `drop-shadow(0 0 3px ${glowColor})` }}
@@ -303,9 +305,9 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
 
       let color = '#10B981'; // aligned
       if (dept.status === 'severe') {
-        color = '#EF4444';
+        color = '#00E5FF';
       } else if (dept.status === 'moderate') {
-        color = '#F59E0B';
+        color = '#3B82F6';
       }
 
       const isSelected = dept.id === selectedDeptId;
@@ -363,8 +365,8 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
                 width={74}
                 height={18}
                 rx={5}
-                fill="rgba(11, 15, 23, 0.88)"
-                stroke={isSelected ? '#6366F1' : 'rgba(255, 255, 255, 0.18)'}
+                fill="rgba(0, 0, 0, 0.88)"
+                stroke={isSelected ? color : 'rgba(255, 255, 255, 0.18)'}
                 strokeWidth="1"
               />
               <text x={6} y={12} fill="#F3F4F6" fontSize="9.5" fontWeight={isSelected ? 'bold' : '600'}>
@@ -406,7 +408,6 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
 
       {/* Left Column: 3D Visualization */}
       <div
-        className="glass-panel"
         style={{
           flex: '1 1 500px',
           height: '430px',
@@ -418,7 +419,9 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
           userSelect: 'none',
           cursor: isDragging.current ? 'grabbing' : 'grab',
           overflow: 'hidden',
-          backgroundColor: 'rgba(17, 22, 34, 0.65)',
+          backgroundColor: 'rgba(5, 5, 5, 0.5)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255,255,255,0.05)',
         }}
         ref={containerRef}
         onMouseDown={handleMouseDown}
@@ -429,18 +432,18 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
         {/* Holographic grid lines & labels background */}
         <div style={{
           position: 'absolute',
-          top: '12px',
-          left: '16px',
+          top: '20px',
+          left: '20px',
           pointerEvents: 'none',
           display: 'flex',
           flexDirection: 'column',
-          gap: '2px',
+          gap: '4px',
         }}>
-          <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span className="live-pulse" style={{ backgroundColor: '#6366F1' }} />
-            3D Cognitive Graph Network Constellation
+          <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="live-pulse" style={{ backgroundColor: '#00E5FF' }} />
+            Cognitive Graph Constellation
           </h4>
-          <span style={{ fontSize: '10px', color: '#6B7280' }}>Drag to rotate network • Click node to focus & inspect graph</span>
+          <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 500 }}>Drag to rotate • Click node to focus</span>
         </div>
 
         {/* 3D SVG Render viewport */}
@@ -451,65 +454,73 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
         {/* Control floating actions overlay */}
         <div style={{
           position: 'absolute',
-          bottom: '16px',
-          left: '16px',
-          right: '16px',
+          bottom: '20px',
+          left: '20px',
+          right: '20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
           {/* Zoom controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(11,15,23,0.8)', padding: '4px 8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '6px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
             <button
               onClick={() => setZoom((prev) => Math.max(0.6, prev - 0.15))}
-              style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', width: '20px' }}
+              style={{ background: 'none', border: 'none', color: '#A1A1AA', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px', width: '20px' }}
             >
               -
             </button>
-            <span style={{ fontSize: '10px', color: '#E5E7EB', minWidth: '40px', textAlign: 'center' }}>
+            <span style={{ fontSize: '11px', color: '#FFFFFF', fontWeight: 700, minWidth: '40px', textAlign: 'center' }}>
               {(zoom * 100).toFixed(0)}%
             </span>
             <button
               onClick={() => setZoom((prev) => Math.min(2.5, prev + 0.15))}
-              style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', width: '20px' }}
+              style={{ background: 'none', border: 'none', color: '#A1A1AA', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px', width: '20px' }}
             >
               +
             </button>
           </div>
 
           {/* Auto Rotate & Reset */}
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => setAutoRotate(!autoRotate)}
               style={{
-                fontSize: '10px',
-                padding: '5px 10px',
-                borderRadius: '6px',
-                backgroundColor: autoRotate ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)',
-                border: autoRotate ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(255,255,255,0.1)',
-                color: autoRotate ? '#818CF8' : '#9CA3AF',
+                fontSize: '11px',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                backgroundColor: autoRotate ? 'rgba(0, 229, 255, 0.15)' : 'rgba(255,255,255,0.05)',
+                border: autoRotate ? '1px solid rgba(0, 229, 255, 0.3)' : '1px solid rgba(255,255,255,0.1)',
+                color: autoRotate ? '#38BDF8' : '#A1A1AA',
                 cursor: 'pointer',
-                fontWeight: 600,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
               }}
             >
-              {autoRotate ? 'Auto-Rotate ON' : 'Auto-Rotate OFF'}
+              <Orbit size={14} />
+              {autoRotate ? 'Rotate ON' : 'Rotate OFF'}
             </button>
 
             {selectedDeptId && (
               <button
                 onClick={handleResetFocus}
                 style={{
-                  fontSize: '10px',
-                  padding: '5px 10px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#FCA5A5',
+                  fontSize: '11px',
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#FFFFFF',
                   cursor: 'pointer',
-                  fontWeight: 600,
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
                 }}
               >
-                Reset Zoom / Focus
+                Reset Focus
+                <X size={14} />
               </button>
             )}
           </div>
@@ -517,152 +528,178 @@ export const GenomeSpace3D: React.FC<GenomeSpace3DProps> = ({ departments }) => 
       </div>
 
       {/* Right Column: Focused Details & Trend Sparkline */}
-      <div
-        className="glass-panel"
-        style={{
-          flex: '1 1 320px',
-          height: '430px',
-          backgroundColor: 'rgba(17, 22, 34, 0.8)',
-          border: '1px solid rgba(99, 102, 241, 0.15)',
-          padding: '22px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          position: 'relative',
-          overflowY: 'auto',
-        }}
-      >
+      <AnimatePresence mode="wait">
         {selectedDept ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%' }}>
-            {/* Header info */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(99, 102, 241, 0.2)', color: '#818CF8' }}>
-                  {selectedDept.code}
-                </span>
-                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: '#FFFFFF' }}>{selectedDept.name}</h3>
-              </div>
-              <span style={{ fontSize: '11px', color: '#9CA3AF', display: 'block', marginTop: '2px' }}>
-                Lead: {selectedDept.lead}
-              </span>
-            </div>
-
-            {/* 4-Vector Metrics Dial Values */}
-            <div>
-              <span style={{ fontSize: '10px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                4-Vector Genome Alignment Dials
-              </span>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '6px' }}>
-                {/* S Dial */}
-                <div style={{ padding: '8px 10px', borderRadius: '6px', backgroundColor: 'rgba(11,15,23,0.5)', border: '1px solid rgba(6,182,212,0.15)' }}>
-                  <span style={{ fontSize: '9px', color: '#06B6D4', fontWeight: 600, display: 'block' }}>STRATEGIC (S)</span>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#F3F4F6' }}>{(selectedDept.s * 100).toFixed(0)}%</span>
+          <motion.div
+            key="details"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              flex: '1 1 320px',
+              height: '430px',
+              backgroundColor: 'rgba(5, 5, 5, 0.6)',
+              border: '1px solid rgba(0, 229, 255, 0.15)',
+              borderRadius: '16px',
+              padding: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              position: 'relative',
+              overflowY: 'auto',
+              boxShadow: 'inset 0 0 40px rgba(0, 229, 255, 0.03)',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
+              {/* Header info */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 8px', borderRadius: '6px', backgroundColor: 'rgba(0, 229, 255, 0.15)', color: '#38BDF8' }}>
+                    {selectedDept.code}
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#FFFFFF' }}>{selectedDept.name}</h3>
                 </div>
-                {/* P Dial */}
-                <div style={{ padding: '8px 10px', borderRadius: '6px', backgroundColor: 'rgba(11,15,23,0.5)', border: '1px solid rgba(245,158,11,0.15)' }}>
-                  <span style={{ fontSize: '9px', color: '#F59E0B', fontWeight: 600, display: 'block' }}>PROCESS (P)</span>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#F3F4F6' }}>{(selectedDept.p * 100).toFixed(0)}%</span>
-                </div>
-                {/* C Dial */}
-                <div style={{ padding: '8px 10px', borderRadius: '6px', backgroundColor: 'rgba(11,15,23,0.5)', border: '1px solid rgba(236,72,153,0.15)' }}>
-                  <span style={{ fontSize: '9px', color: '#EC4899', fontWeight: 600, display: 'block' }}>COHESION (C)</span>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#F3F4F6' }}>{(selectedDept.c * 100).toFixed(0)}%</span>
-                </div>
-                {/* M Dial */}
-                <div style={{ padding: '8px 10px', borderRadius: '6px', backgroundColor: 'rgba(11,15,23,0.5)', border: '1px solid rgba(139,92,246,0.15)' }}>
-                  <span style={{ fontSize: '9px', color: '#8B5CF6', fontWeight: 600, display: 'block' }}>MEMORY (M)</span>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#F3F4F6' }}>{(selectedDept.m * 100).toFixed(0)}%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Sparkline Graph for drift index */}
-            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: '100px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  7-Day Behavioral Drift Graph
-                </span>
-                <span style={{ fontSize: '10px', color: selectedDept.status === 'severe' ? '#EF4444' : '#10B981', fontWeight: 'bold' }}>
-                  Current: {selectedDept.driftScore.toFixed(2)}
+                <span style={{ fontSize: '12px', color: '#A1A1AA', display: 'block', marginTop: '6px', fontWeight: 500 }}>
+                  Lead: {selectedDept.lead}
                 </span>
               </div>
-              <div style={{ flex: 1, backgroundColor: '#090D15', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '12px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                {/* Custom inline sparkline SVG */}
-                <svg width="100%" height="70" viewBox="0 0 200 70" style={{ overflow: 'visible' }}>
-                  {(() => {
-                    const data = selectedDept.trendHistory;
-                    const max = Math.max(...data, 1);
-                    const min = Math.min(...data, 0);
-                    const pts = data.map((val, i) => {
-                      const x = 10 + (i / (data.length - 1)) * 180;
-                      const y = 60 - ((val - min) / (max - min)) * 50;
-                      return { x, y };
-                    });
 
-                    const path = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-                    const area = `${path} L ${pts[pts.length - 1].x} 70 L ${pts[0].x} 70 Z`;
-                    const statusColor = selectedDept.status === 'severe' ? '#EF4444' : selectedDept.status === 'moderate' ? '#F59E0B' : '#10B981';
-
-                    return (
-                      <g>
-                        <defs>
-                          <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={statusColor} stopOpacity="0.3" />
-                            <stop offset="100%" stopColor={statusColor} stopOpacity="0.0" />
-                          </linearGradient>
-                        </defs>
-                        <path d={area} fill="url(#sparkGrad)" />
-                        <path d={path} fill="none" stroke={statusColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        {pts.map((p, i) => (
-                          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#090D15" stroke={statusColor} strokeWidth="1.8" />
-                        ))}
-                      </g>
-                    );
-                  })()}
-                </svg>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: '#6B7280', marginTop: '6px' }}>
-                  <span>Day -7</span>
-                  <span>Day -4</span>
-                  <span>Today</span>
+              {/* 4-Vector Metrics Dial Values */}
+              <div>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: '#52525B', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  4-Vector Alignment
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
+                  {/* S Dial */}
+                  <div style={{ padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0, 229, 255, 0.2)' }}>
+                    <span style={{ fontSize: '9px', color: '#00E5FF', fontWeight: 700, display: 'block' }}>STRATEGIC (S)</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>{(selectedDept.s * 100).toFixed(0)}%</span>
+                  </div>
+                  {/* P Dial */}
+                  <div style={{ padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                    <span style={{ fontSize: '9px', color: '#3B82F6', fontWeight: 700, display: 'block' }}>PROCESS (P)</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>{(selectedDept.p * 100).toFixed(0)}%</span>
+                  </div>
+                  {/* C Dial */}
+                  <div style={{ padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                    <span style={{ fontSize: '9px', color: '#EC4899', fontWeight: 700, display: 'block' }}>COHESION (C)</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>{(selectedDept.c * 100).toFixed(0)}%</span>
+                  </div>
+                  {/* M Dial */}
+                  <div style={{ padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                    <span style={{ fontSize: '9px', color: '#8B5CF6', fontWeight: 700, display: 'block' }}>MEMORY (M)</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF' }}>{(selectedDept.m * 100).toFixed(0)}%</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Actions panel */}
-            <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px' }}>
-              <button
-                onClick={handleResetFocus}
-                style={{
-                  flex: 1,
-                  padding: '8px 10px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#D1D5DB',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                Close Inspection
-              </button>
+              {/* Sparkline Graph for drift index */}
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: '100px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 800, color: '#52525B', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                    7-Day Behavioral Drift
+                  </span>
+                  <span style={{ fontSize: '11px', color: selectedDept.status === 'severe' ? '#00E5FF' : selectedDept.status === 'moderate' ? '#3B82F6' : '#10B981', fontWeight: 800 }}>
+                    Current: {selectedDept.driftScore.toFixed(2)}
+                  </span>
+                </div>
+                <div style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  {/* Custom inline sparkline SVG */}
+                  <svg width="100%" height="70" viewBox="0 0 200 70" style={{ overflow: 'visible' }}>
+                    {(() => {
+                      const data = selectedDept.trendHistory;
+                      const max = Math.max(...data, 1);
+                      const min = Math.min(...data, 0);
+                      const pts = data.map((val, i) => {
+                        const x = 10 + (i / (data.length - 1)) * 180;
+                        const y = 60 - ((val - min) / (max - min)) * 50;
+                        return { x, y };
+                      });
+
+                      const path = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                      const area = `${path} L ${pts[pts.length - 1].x} 70 L ${pts[0].x} 70 Z`;
+                      const statusColor = selectedDept.status === 'severe' ? '#00E5FF' : selectedDept.status === 'moderate' ? '#3B82F6' : '#10B981';
+
+                      return (
+                        <g>
+                          <defs>
+                            <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor={statusColor} stopOpacity="0.4" />
+                              <stop offset="100%" stopColor={statusColor} stopOpacity="0.0" />
+                            </linearGradient>
+                          </defs>
+                          <path d={area} fill="url(#sparkGrad)" />
+                          <path d={path} fill="none" stroke={statusColor} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                          {pts.map((p, i) => (
+                            <circle key={i} cx={p.x} cy={p.y} r="4" fill="#000" stroke={statusColor} strokeWidth="2" />
+                          ))}
+                        </g>
+                      );
+                    })()}
+                  </svg>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#A1A1AA', marginTop: '10px', fontWeight: 600 }}>
+                    <span>Day -7</span>
+                    <span>Day -4</span>
+                    <span>Today</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions panel */}
+              <div style={{ display: 'flex', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleResetFocus}
+                  style={{
+                    flex: 1,
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#FFFFFF',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                  }}
+                >
+                  Close Inspection
+                </motion.button>
+              </div>
             </div>
-          </div>
+          </motion.div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '12px', textAlign: 'center', padding: '0 10px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(99, 102, 241, 0.1)', border: '1px dashed rgba(99, 102, 241, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: '#818CF8' }}>
-              🪐
+          <motion.div
+            key="placeholder"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="glass-panel"
+            style={{
+              flex: '1 1 320px',
+              height: '430px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '16px',
+              textAlign: 'center',
+              padding: '0 24px'
+            }}
+          >
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(0, 229, 255, 0.1)', border: '1px dashed rgba(0, 229, 255, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: '#38BDF8' }}>
+              <Orbit size={28} />
             </div>
             <div>
-              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#FFFFFF' }}>Interactive Network Inspection</h4>
-              <p style={{ margin: '6px 0 0 0', fontSize: '11.5px', color: '#9CA3AF', lineHeight: '1.4' }}>
+              <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#FFFFFF' }}>Interactive Inspection</h4>
+              <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#A1A1AA', lineHeight: '1.5', fontWeight: 500 }}>
                 Select a floating department node in the 3D space to trigger high-resolution camera zoom and plot its 7-day cognitive drift history.
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 };
